@@ -40,6 +40,8 @@ build/Release
 # Dependency directories
 node_modules/
 jspm_packages/
+**/node_modules/
+**/.env
 
 # Snowpack dependency directory (https://snowpack.dev/)
 web_modules/
@@ -72,6 +74,7 @@ web_modules/
 
 # parcel-bundler cache (https://parceljs.org/)
 .cache
+**/.cache/
 .parcel-cache
 
 # Next.js build output
@@ -81,6 +84,7 @@ out
 # Nuxt.js build / generate output
 .nuxt
 dist
+**/dist/
 
 # Gatsby files
 .cache/
