@@ -1,5 +1,6 @@
 import { readFile, writeFile } from 'node:fs';
 
+// FILES
 readFile('./txt/start.txt', 'utf-8', (error, data1) => {
     if (error) return console.log('ERROR: File specified not found.')
     readFile(`./txt/${data1}.txt`, 'utf-8', (error, data2) => {
