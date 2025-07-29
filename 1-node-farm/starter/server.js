@@ -1,7 +1,6 @@
 import http from 'node:http';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath, URL } from 'node:url';
-import { hostname } from 'node:os';
 
 // Server Routing
 const replaceTemplate = (template, product) => {
