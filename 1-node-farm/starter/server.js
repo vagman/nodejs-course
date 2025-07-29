@@ -1,6 +1,7 @@
 import http from 'node:http';
 import { readFileSync } from 'node:fs';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, URL } from 'node:url';
+import { hostname } from 'node:os';
 
 // Server Routing
 const replaceTemplate = (template, product) => {
@@ -8,7 +9,7 @@ const replaceTemplate = (template, product) => {
     output = output.replace(/{%IMAGE%}/g, product.image);
     output = output.replace(/{%PRICE%}/g, product.price);
     output = output.replace(/{%FROM%}/g, product.from);
-    output = output.replace(/{%NUTRIENTS%}/g, product.nutrients);
+    output = output.replace(/{%NUTRIENTSNAME%}/g, product.nutrients);
     output = output.replace(/{%QUANTITY%}/g, product.quantity);
     output = output.replace(/{%ID%}/g, product.id);
     output = output.replace(/{%DESCRIPTION%}/g, product.description);
@@ -24,12 +25,19 @@ const data = readFileSync(fileURLToPath(import.meta.resolve('./dev-data/data.jso
 const dataObject = JSON.parse(data);
 
 const server = http.createServer((request, response) => {
-    const pathName = request.url;
+    const requestURL = new URL(request.url, `http://${request.headers.host}`);
+    const pathName = requestURL.pathname;
+
+    // Get the query id from the URL
+    // e.g. /product?id=0
+    const query = requestURL.searchParams.get('id'); 
 
     // Overview Page
-    if (pathName === '/' || pathName === '/overview') {      
+    if (pathName === '/' || pathName === '/overview') {
         response.writeHead(200, {'Content-type': 'text/html'});
 
+        // Generate HTML for each product card
+        // and replace the placeholder in the overview template
         const cardsHTML = dataObject.map(element => 
             replaceTemplate(templateCard, element)
         ).join('');
@@ -38,7 +46,9 @@ const server = http.createServer((request, response) => {
 
     // Product Page
     } else if (pathName === '/product') {
-        response.end('This is the PRODUCT');
+        const product = dataObject[query];
+        const output = replaceTemplate(templateProduct, product);
+        response.end(output);
 
     // API
     } else if (pathName ==='/api') {
