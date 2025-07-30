@@ -48,7 +48,7 @@ const server = http.createServer((request, response) => {
     // API
     } else if (pathName ==='/api') {
         response.writeHead(200, {'Content-type': 'application/json'});
-        response.end(data);
+        response.end(dat a);
 
     // Not Found    
     }else {
