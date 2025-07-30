@@ -1,6 +1,10 @@
 import http from 'node:http';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath, URL } from 'node:url';
+
+// Importing a 3rd party module
+import slugify from 'slugify';
+
 import replaceTemplate from './modules/replaceTemplate.js';
 
 // Server Routing
@@ -10,6 +14,10 @@ const templateCard = readFileSync(fileURLToPath(import.meta.resolve('./templates
 
 const data = readFileSync(fileURLToPath(import.meta.resolve('./dev-data/data.json')), 'utf-8');
 const dataObject = JSON.parse(data);
+
+// Slugify options
+const slugs = dataObject.map(product => slugify(product.productName, { lower: true}));
+// console.log(slugs);
 
 const server = http.createServer((request, response) => {
     const requestURL = new URL(request.url, `http://${request.headers.host}`);
