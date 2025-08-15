@@ -1,6 +1,10 @@
 import { fileURLToPath } from 'node:url';
 import { dirname } from 'path';
-import { readFileSync, write, writeFile } from 'node:fs';
+import {
+  readFileSync,
+  write,
+  writeFile,
+} from 'node:fs';
 import express from 'express';
 
 const app = express();
@@ -11,11 +15,12 @@ app.use(express.json());
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const tours = JSON.parse(
-  readFileSync(`${__dirname}/dev-data/data/tours-simple.json`)
+  readFileSync(
+    `${__dirname}/dev-data/data/tours-simple.json`
+  )
 );
 
-// GET route
-app.get('/api/v1/tours', (request, response) => {
+const getAllTours = (request, response) => {
   response.status(200).json({
     status: 'success',
     result: tours.length,
@@ -23,12 +28,14 @@ app.get('/api/v1/tours', (request, response) => {
       tours,
     },
   });
-});
+};
 
-app.get('/api/v1/tours/:id', (request, response) => {
+const getTour = (request, response) => {
   // Convert string to number
   const id = request.params.id * 1;
-  const tour = tours.find((element) => element.id === id);
+  const tour = tours.find(
+    (element) => element.id === id
+  );
 
   // if (id > tours.length) {
   if (!tour) {
@@ -44,12 +51,14 @@ app.get('/api/v1/tours/:id', (request, response) => {
       tour,
     },
   });
-});
+};
 
-// POST route
-app.post('/api/v1/tours', (request, response) => {
+const createTour = (request, response) => {
   const newTourId = tours[tours.length - 1].id + 1;
-  const newTour = Object.assign({ id: newTourId }, request.body);
+  const newTour = Object.assign(
+    { id: newTourId },
+    request.body
+  );
 
   tours.push(newTour);
 
@@ -65,10 +74,9 @@ app.post('/api/v1/tours', (request, response) => {
       });
     }
   );
-});
+};
 
-// Update route
-app.patch('/api/v1/tours/:id', (request, response) => {
+const updateTour = (request, response) => {
   // Converting the id from string to number and checking if the specific tour exists
   if (request.params.id * 1 > tours.length) {
     return response.status(404).json({
@@ -83,10 +91,9 @@ app.patch('/api/v1/tours/:id', (request, response) => {
       tour: '<Updated tour here...>',
     },
   });
-});
+};
 
-// Delete route
-app.delete('/api/v1/tours/:id', (request, response) => {
+const deleteTour = (request, response) => {
   // Converting the id from string to number and checking if the specific tour exists
   if (request.params.id * 1 > tours.length) {
     return response.status(404).json({
@@ -99,7 +106,24 @@ app.delete('/api/v1/tours/:id', (request, response) => {
     status: 'success',
     data: null,
   });
-});
+};
+
+// app.get('/api/v1/tours', getAllTours);
+// app.post('/api/v1/tours', createTour);
+// app.get('/api/v1/tours/:id', getTour);
+// app.patch('/api/v1/tours/:id', updateTour);
+// app.delete('/api/v1/tours/:id', deleteTour);
+
+app
+  .route('/api/v1/tours')
+  .get(getAllTours)
+  .post(getTour);
+
+app
+  .route('/api/v1/tours/:id')
+  .get(getTour)
+  .patch(updateTour)
+  .delete(deleteTour);
 
 const port = 3000;
 app.listen(port, () => {
