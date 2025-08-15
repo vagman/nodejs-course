@@ -1,15 +1,49 @@
+import { fileURLToPath } from 'node:url';
+import { dirname } from 'path';
+import { readFileSync, write, writeFile } from 'node:fs';
 import express from 'express';
 
 const app = express();
 
-app.get('/', (request, response) => {
-  response
-    .status(200)
-    .json({ message: 'Hello from the server side!', app: 'Natours' });
+// Middleware: function that modifies the incoming request data
+app.use(express.json());
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const tours = JSON.parse(
+  readFileSync(`${__dirname}/dev-data/data/tours-simple.json`)
+);
+
+// GET route
+app.get('/api/v1/tours', (request, response) => {
+  response.status(200).json({
+    status: 'success',
+    result: tours.length,
+    data: {
+      tours,
+    },
+  });
 });
 
-app.post('/', (request, response) => {
-  response.status(200).send('You can post to this endpoint too!');
+// POST route
+app.post('/api/v1/tours', (request, response) => {
+  const newTourId = tours[tours.length - 1].id + 1;
+  const newTour = Object.assign({ id: newTourId }, request.body);
+
+  tours.push(newTour);
+
+  writeFile(
+    `${__dirname}/dev-data/data/tours-simple.json`,
+    JSON.stringify(tours),
+    (error) => {
+      response.status(201).json({
+        status: 'success',
+        data: {
+          tour: newTour,
+        },
+      });
+    }
+  );
 });
 
 const port = 3000;
