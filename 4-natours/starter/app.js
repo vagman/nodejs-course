@@ -5,9 +5,12 @@ import {
   write,
   writeFile,
 } from 'node:fs';
+import morgan from 'morgan';
 import express from 'express';
 
 const app = express();
+
+// ------------ 1) Middleware Functions -------------
 // Middleware: function that modifies the incoming request data
 app.use(express.json());
 
@@ -32,6 +35,7 @@ const tours = JSON.parse(
   )
 );
 
+// ------------- 2) Route Handlers -------------
 const getAllTours = (request, response) => {
   console.log(request.requestTime);
   response.status(200).json({
@@ -122,12 +126,7 @@ const deleteTour = (request, response) => {
   });
 };
 
-// app.get('/api/v1/tours', getAllTours);
-// app.post('/api/v1/tours', createTour);
-// app.get('/api/v1/tours/:id', getTour);
-// app.patch('/api/v1/tours/:id', updateTour);
-// app.delete('/api/v1/tours/:id', deleteTour);
-
+// ------------- 3) Routes -------------
 app
   .route('/api/v1/tours')
   .get(getAllTours)
@@ -139,6 +138,7 @@ app
   .patch(updateTour)
   .delete(deleteTour);
 
+// ------------- 4) Start Server -------------
 const port = 3000;
 app.listen(port, () => {
   console.log(`App running on port ${port}...`);
