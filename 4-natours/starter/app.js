@@ -8,9 +8,21 @@ import {
 import express from 'express';
 
 const app = express();
-
 // Middleware: function that modifies the incoming request data
 app.use(express.json());
+
+// next is always the 3rd argument
+app.use((request, response, next) => {
+  console.log(
+    'Hello from the middleware function! ☕️'
+  );
+  next();
+});
+
+app.use((request, response, next) => {
+  request.requestTime = new Date().toISOString();
+  next();
+});
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -21,8 +33,10 @@ const tours = JSON.parse(
 );
 
 const getAllTours = (request, response) => {
+  console.log(request.requestTime);
   response.status(200).json({
     status: 'success',
+    requestedAt: request.requestTime,
     result: tours.length,
     data: {
       tours,
