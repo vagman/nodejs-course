@@ -12,8 +12,8 @@ const app = express();
 
 // ------------ 1) Middleware Functions -------------
 // Middleware: function that modifies the incoming request data
+app.use(morgan('dev'));
 app.use(express.json());
-
 // next is always the 3rd argument
 app.use((request, response, next) => {
   console.log(
@@ -126,6 +126,41 @@ const deleteTour = (request, response) => {
   });
 };
 
+const getAllUsers = (request, response) => {
+  response.status(500).json({
+    status: 'error',
+    message: 'This route is not yet defined.',
+  });
+};
+
+const createUser = (request, response) => {
+  response.status(500).json({
+    status: 'error',
+    message: 'This route is not yet defined.',
+  });
+};
+
+const getUser = (request, response) => {
+  response.status(500).json({
+    status: 'error',
+    message: 'This route is not yet defined.',
+  });
+};
+
+const updateUser = (request, response) => {
+  response.status(500).json({
+    status: 'error',
+    message: 'This route is not yet defined.',
+  });
+};
+
+const deleteUser = (request, response) => {
+  response.status(500).json({
+    status: 'error',
+    message: 'This route is not yet defined.',
+  });
+};
+
 // ------------- 3) Routes -------------
 app
   .route('/api/v1/tours')
@@ -137,6 +172,17 @@ app
   .get(getTour)
   .patch(updateTour)
   .delete(deleteTour);
+
+app
+  .route('/api/v1/users')
+  .get(getAllUsers)
+  .post(createUser);
+
+app
+  .route('/api/v1/users/:id')
+  .get(getUser)
+  .patch(updateUser)
+  .delete(deleteUser);
 
 // ------------- 4) Start Server -------------
 const port = 3000;
