@@ -28,6 +28,20 @@ const checkTourID = (
   next();
 };
 
+// Exercise: create your own middleware function checkBody()
+// Check if the post(createTour()) request has the name and price properties.
+// If not, send a 400 (BAD REQUEST) response with an error message.
+// Then add it to the POST handler stack.
+const checkBody = (request, response, next) => {
+  if (!request.body.name || !request.body.price) {
+    return response.status(400).json({
+      status: 'fail',
+      message: 'Missing name or price properties',
+    });
+  }
+  next();
+};
+
 // ------------- 2) Route Handlers -------------
 const getAllTours = (request, response) => {
   console.log(request.requestTime);
@@ -97,6 +111,7 @@ const deleteTour = (request, response) => {
 
 export {
   checkTourID,
+  checkBody,
   getAllTours,
   getTour,
   createTour,
