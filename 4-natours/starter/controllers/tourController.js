@@ -2,8 +2,9 @@ import { fileURLToPath } from 'node:url';
 import { readFileSync, writeFile } from 'node:fs';
 import { dirname } from 'node:path';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+const __dirname = dirname(
+  fileURLToPath(import.meta.url)
+);
 const tours = JSON.parse(
   readFileSync(
     `${__dirname}/../dev-data/data/tours-simple.json`

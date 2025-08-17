@@ -1,5 +1,7 @@
 import morgan from 'morgan';
 import express from 'express';
+import { fileURLToPath } from 'node:url';
+import { dirname } from 'node:path';
 import tourRouter from './routes/tourRoutes.js';
 import userRouter from './routes/userRoutes.js';
 
@@ -8,8 +10,12 @@ const app = express();
 // ------------ 1) Middleware Functions -------------
 // Middleware: function that modifies the incoming request data
 app.use(morgan('dev'));
-
 app.use(express.json());
+
+const __dirname = dirname(
+  fileURLToPath(import.meta.url)
+);
+app.use(express.static(`${__dirname}/public`));
 
 app.use((request, response, next) => {
   console.log(
