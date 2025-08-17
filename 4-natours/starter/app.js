@@ -9,7 +9,8 @@ const app = express();
 
 // ------------ 1) Middleware Functions -------------
 // Middleware: function that modifies the incoming request data
-app.use(morgan('dev'));
+if (process.env.NODE_ENV === 'development')
+  app.use(morgan('dev'));
 app.use(express.json());
 
 const __dirname = dirname(
