@@ -10,6 +10,24 @@ const tours = JSON.parse(
   )
 );
 
+// ------------- Middleware functions -------------
+const checkTourID = (
+  request,
+  response,
+  next,
+  value
+) => {
+  console.log(`Tour ID is: ${value}`);
+  // Converting the id from string to number and checking if the specific tour exists
+  if (request.params.id * 1 > tours.length) {
+    return response.status(404).json({
+      status: 'fail',
+      message: 'Invalid ID',
+    });
+  }
+  next();
+};
+
 // ------------- 2) Route Handlers -------------
 const getAllTours = (request, response) => {
   console.log(request.requestTime);
@@ -29,14 +47,6 @@ const getTour = (request, response) => {
   const tour = tours.find(
     (element) => element.id === id
   );
-
-  // if (id > tours.length) {
-  if (!tour) {
-    return response.status(404).json({
-      status: 'fail',
-      message: 'Invalid ID',
-    });
-  }
 
   response.status(200).json({
     status: 'success',
@@ -70,14 +80,6 @@ const createTour = (request, response) => {
 };
 
 const updateTour = (request, response) => {
-  // Converting the id from string to number and checking if the specific tour exists
-  if (request.params.id * 1 > tours.length) {
-    return response.status(404).json({
-      status: 'fail',
-      message: 'Invalid ID',
-    });
-  }
-
   response.status(200).json({
     status: 'success',
     data: {
@@ -87,14 +89,6 @@ const updateTour = (request, response) => {
 };
 
 const deleteTour = (request, response) => {
-  // Converting the id from string to number and checking if the specific tour exists
-  if (request.params.id * 1 > tours.length) {
-    return response.status(404).json({
-      status: 'fail',
-      message: 'Invalid ID',
-    });
-  }
-
   response.status(204).json({
     status: 'success',
     data: null,
@@ -102,6 +96,7 @@ const deleteTour = (request, response) => {
 };
 
 export {
+  checkTourID,
   getAllTours,
   getTour,
   createTour,
