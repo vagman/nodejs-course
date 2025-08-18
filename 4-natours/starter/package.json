@@ -2,10 +2,26 @@
   "name": "natours",
   "version": "1.0.0",
   "description": "learning node, express and mongoDB",
+  "homepage": "https://github.com/vagman/nodejs-course/tree/main/4-natours/starter",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/vagman/nodejs-course.git"
+  },
+  "keywords": [
+    "nodejs",
+    "express",
+    "mongodb",
+    "learning",
+    "backend",
+    "api",
+    "javascript",
+    "eslint",
+    "prettier"
+  ],
   "license": "ISC",
   "author": "Vaggelis Manousakis",
   "type": "module",
-  "main": "app.js",
+  "main": "server.js",
   "scripts": {
     "start:dev": "cross-env NODE_ENV=development nodemon server.js",
     "start:prod": "cross-env NODE_ENV=production nodemon server.js",
