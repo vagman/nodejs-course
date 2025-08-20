@@ -3,14 +3,14 @@ import * as tourController from '../controllers/tourController.js';
 
 const router = express.Router();
 
-router.param('id', tourController.checkTourID);
+// router.param('id', tourController.checkTourID);
 router
   .route('/')
   .get(tourController.getAllTours)
   .post(tourController.checkBody)
   .post(
     tourController.checkBody,
-    tourController.createTour
+    tourController.createTour,
   );
 
 router

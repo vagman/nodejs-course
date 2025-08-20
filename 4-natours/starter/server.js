@@ -9,40 +9,16 @@ const dbConnectionString =
     process.env.DATABASE_PASSWORD,
   );
 
-mongoose.connect(dbConnectionString).then(() => {
-  console.log('DB connection successful!');
-});
-
-const tourSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: [true, 'A tour must have a name'],
-    unique: true,
-  },
-  rating: {
-    type: Number,
-    default: 4.5,
-  },
-  price: {
-    type: Number,
-    required: [true, 'A tour must have a price'],
-  },
-});
-
-const Tour = mongoose.model('Tour', tourSchema);
-const testTour = new Tour({
-  name: 'The Park Camper',
-  rating: 4.7,
-  price: 497,
-});
-
-testTour
-  .save()
-  .then((document) => {
-    console.log(document);
+mongoose
+  .connect(dbConnectionString)
+  .then(() => {
+    console.log('DB connection successful!');
   })
   .catch((error) => {
-    console.error(`ERROR: ${error} 💣`);
+    console.error(
+      'DB connection error:',
+      error.message,
+    );
   });
 
 // ------------- 4) Start Server -------------

@@ -1,33 +1,10 @@
 import { fileURLToPath } from 'node:url';
-import { readFileSync, writeFile } from 'node:fs';
 import { dirname } from 'node:path';
+import Tour from '../models/tourModel.js';
 
 const __dirname = dirname(
-  fileURLToPath(import.meta.url)
+  fileURLToPath(import.meta.url),
 );
-const tours = JSON.parse(
-  readFileSync(
-    `${__dirname}/../dev-data/data/tours-simple.json`
-  )
-);
-
-// ------------- Middleware functions -------------
-const checkTourID = (
-  request,
-  response,
-  next,
-  value
-) => {
-  console.log(`Tour ID is: ${value}`);
-  // Converting the id from string to number and checking if the specific tour exists
-  if (request.params.id * 1 > tours.length) {
-    return response.status(404).json({
-      status: 'fail',
-      message: 'Invalid ID',
-    });
-  }
-  next();
-};
 
 // Exercise: create your own middleware function checkBody()
 // Check if the post(createTour()) request has the name and price properties.
@@ -59,39 +36,25 @@ const getAllTours = (request, response) => {
 const getTour = (request, response) => {
   // Convert string to number
   const id = request.params.id * 1;
-  const tour = tours.find(
-    (element) => element.id === id
-  );
+  // const tour = tours.find(
+  //   (element) => element.id === id,
+  // );
 
-  response.status(200).json({
-    status: 'success',
-    data: {
-      tour,
-    },
-  });
+  // response.status(200).json({
+  //   status: 'success',
+  //   data: {
+  //     tour,
+  //   },
+  // });
 };
 
 const createTour = (request, response) => {
-  const newTourId = tours[tours.length - 1].id + 1;
-  const newTour = Object.assign(
-    { id: newTourId },
-    request.body
-  );
-
-  tours.push(newTour);
-
-  writeFile(
-    `${__dirname}/dev-data/data/tours-simple.json`,
-    JSON.stringify(tours),
-    (error) => {
-      response.status(201).json({
-        status: 'success',
-        data: {
-          tour: newTour,
-        },
-      });
-    }
-  );
+  response.status(201).json({
+    status: 'success',
+    // data: {
+    //   tour: newTour,
+    // },
+  });
 };
 
 const updateTour = (request, response) => {
@@ -111,7 +74,7 @@ const deleteTour = (request, response) => {
 };
 
 export {
-  checkTourID,
+  // checkTourID,
   checkBody,
   getAllTours,
   getTour,
