@@ -4,12 +4,13 @@ import * as tourController from '../controllers/tourController.js';
 const router = express.Router();
 
 // router.param('id', tourController.checkTourID);
+
 router
   .route('/')
   .get(tourController.getAllTours)
-  .post(tourController.checkBody)
+  // .post(tourController.checkBody)
   .post(
-    tourController.checkBody,
+    // tourController.checkBody,
     tourController.createTour,
   );
 
