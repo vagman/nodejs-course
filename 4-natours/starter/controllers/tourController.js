@@ -21,31 +21,45 @@ const __dirname = dirname(
 // };
 
 // ------------- 2) Route Handlers -------------
-const getAllTours = (request, response) => {
-  console.log(request.requestTime);
-  response.status(200).json({
-    status: 'success',
-    requestedAt: request.requestTime,
-    result: tours.length,
-    data: {
-      tours,
-    },
-  });
+const getAllTours = async (request, response) => {
+  try {
+    const tours = await Tour.find();
+
+    response.status(200).json({
+      status: 'success',
+      requestedAt: request.requestTime,
+      result: tours.length,
+      data: {
+        tours,
+      },
+    });
+  } catch (error) {
+    response.status(404).json({
+      status: 'fail',
+      message: error,
+    });
+  }
 };
 
-const getTour = (request, response) => {
-  // Convert string to number
-  const id = request.params.id * 1;
-  // const tour = tours.find(
-  //   (element) => element.id === id,
-  // );
+const getTour = async (request, response) => {
+  try {
+    const tour = await Tour.findById(
+      request.params.id,
+    );
+    // Tour.findOne({ _id: request.params.id })
 
-  // response.status(200).json({
-  //   status: 'success',
-  //   data: {
-  //     tour,
-  //   },
-  // });
+    response.status(200).json({
+      status: 'success',
+      data: {
+        tour,
+      },
+    });
+  } catch (error) {
+    response.status(404).json({
+      status: 'fail',
+      message: error,
+    });
+  }
 };
 
 const createTour = async (request, response) => {
@@ -71,20 +85,45 @@ const createTour = async (request, response) => {
   }
 };
 
-const updateTour = (request, response) => {
-  response.status(200).json({
-    status: 'success',
-    data: {
-      tour: '<Updated tour here...>',
-    },
-  });
+const updateTour = async (request, response) => {
+  try {
+    const tour = await Tour.findByIdAndUpdate(
+      request.params.id,
+      request.body,
+      {
+        new: true,
+        runValidators: true,
+      },
+    );
+
+    response.status(200).json({
+      status: 'success',
+      data: {
+        tour,
+      },
+    });
+  } catch (error) {
+    response.status(400).json({
+      status: 'fail',
+      message: 'Invalid data sent!',
+    });
+  }
 };
 
-const deleteTour = (request, response) => {
-  response.status(204).json({
-    status: 'success',
-    data: null,
-  });
+const deleteTour = async (request, response) => {
+  try {
+    await Tour.findByIdAndDelete(request.params.id);
+
+    response.status(204).json({
+      status: 'success',
+      data: null,
+    });
+  } catch (error) {
+    response.status(404).json({
+      status: 'fail',
+      message: 'Invalid data sent!',
+    });
+  }
 };
 
 export {
