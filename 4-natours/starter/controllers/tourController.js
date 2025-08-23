@@ -1,10 +1,10 @@
-import { fileURLToPath } from 'node:url';
-import { dirname } from 'node:path';
+// import { fileURLToPath } from 'node:url';
+// import { dirname } from 'node:path';
 import Tour from '../models/tourModel.js';
 
-const __dirname = dirname(
-  fileURLToPath(import.meta.url),
-);
+// const __dirname = dirname(
+//   fileURLToPath(import.meta.url),
+// );
 
 // Exercise (Create a middleware function): create your own middleware function checkBody()
 // Check if the post(createTour()) request has the name and price properties.
@@ -80,7 +80,7 @@ const createTour = async (request, response) => {
   } catch (error) {
     response.status(400).json({
       status: 'fail',
-      message: 'Invalid data sent!',
+      message: '💣💣💣 ERROR: ' + error.message,
     });
   }
 };
