@@ -53,6 +53,8 @@ const tourSchema = new Schema({
   createdAt: {
     type: Date,
     default: Date.now,
+    // Hiding sensitive data fields
+    select: false,
   },
   startDate: [Date],
 });

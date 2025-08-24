@@ -36,7 +36,17 @@ const getAllTours = async (request, response) => {
       query.sort(sortBy);
     }
 
-    // 3) EXECUTE QUERY
+    // 3) FIELD LIMITING
+    if (request.query.fields) {
+      const fields = request.query.fields
+        .split(',')
+        .join(' ');
+      query = query.select(fields);
+    } else {
+      query = query.select('-__v');
+    }
+
+    // 4) EXECUTE QUERY
     const tours = await query;
 
     // SEND RESPONSE
