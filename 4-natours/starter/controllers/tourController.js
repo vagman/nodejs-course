@@ -3,7 +3,9 @@ import Tour from '../models/tourModel.js';
 // ------------- 2) Route Handlers -------------
 const getAllTours = async (request, response) => {
   try {
-    // 1) query filtering
+    console.log(request.query);
+    // 1) BUILD QUERY
+    // 1A) query filtering
     const parsedQuery = { ...request.query };
 
     const excludedFields = [
@@ -16,17 +18,26 @@ const getAllTours = async (request, response) => {
       (element) => delete parsedQuery[element],
     );
 
-    // 2) Advanced query filtering: Convert operators to MongoDB format
+    // 1B) Advanced query filtering: Convert operators to MongoDB format
     let queryStr = JSON.stringify(parsedQuery);
     queryStr = queryStr.replace(
       /\b(gte|gt|lte|lt)\b/g,
       (match) => `$${match}`,
     );
 
-    const queryObject = JSON.parse(queryStr);
+    const mongoQuery = JSON.parse(queryStr);
 
-    // 3) Execute query
-    const tours = await Tour.find(queryObject);
+    // 2) SORTING
+    let query = Tour.find(mongoQuery);
+    if (request.query.sort) {
+      const sortBy = request.query.sort
+        .split(',')
+        .join(' ');
+      query.sort(sortBy);
+    }
+
+    // 3) EXECUTE QUERY
+    const tours = await query;
 
     // SEND RESPONSE
     response.status(200).json({
