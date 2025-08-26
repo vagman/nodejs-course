@@ -1,5 +1,13 @@
 import Tour from '../models/tourModel.js';
 
+// Middleware for an alias that returns the top 5 in ratings & cheapest tours
+const aliasTopTours = (request, response, next) => {
+  // console.log('before', request.query);
+  request.url =
+    '?limit=5&sort=-ratingsAverage,price&fields=name,price,ratingsAverage,difficulty';
+  next();
+};
+
 // ------------- 2) Route Handlers -------------
 const getAllTours = async (request, response) => {
   try {
@@ -33,7 +41,7 @@ const getAllTours = async (request, response) => {
       const sortBy = request.query.sort
         .split(',')
         .join(' ');
-      query.sort(sortBy);
+      query = query.sort(sortBy);
     }
 
     // 3) FIELD LIMITING
@@ -47,8 +55,8 @@ const getAllTours = async (request, response) => {
     }
 
     // 4) PAGINATION
-    const page = request.query.page * 1 || 1;
-    const limit = request.query.limit || 100;
+    const page = Number(request.query.page * 1) || 1;
+    const limit = Number(request.query.limit) || 100;
     const skip = (page - 1) * limit;
 
     // page=2&limit=10 means: tours 1-10 for page 1, 11-20 for page 2, 21-30 for page 3, ...
@@ -166,8 +174,7 @@ const deleteTour = async (request, response) => {
 };
 
 export {
-  // checkTourID,
-  // checkBody,
+  aliasTopTours,
   getAllTours,
   getTour,
   createTour,

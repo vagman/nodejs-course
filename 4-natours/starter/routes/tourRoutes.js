@@ -1,23 +1,33 @@
 import express from 'express';
-import * as tourController from '../controllers/tourController.js';
+import {
+  aliasTopTours,
+  getAllTours,
+  getTour,
+  createTour,
+  updateTour,
+  deleteTour,
+} from '../controllers/tourController.js';
 
 const router = express.Router();
 
 // router.param('id', tourController.checkTourID);
+router
+  .route('/top-5-cheap')
+  .get(aliasTopTours, getAllTours);
 
 router
   .route('/')
-  .get(tourController.getAllTours)
+  .get(getAllTours)
   // .post(tourController.checkBody)
   .post(
     // tourController.checkBody,
-    tourController.createTour,
+    createTour,
   );
 
 router
   .route('/:id')
-  .get(tourController.getTour)
-  .patch(tourController.updateTour)
-  .delete(tourController.deleteTour);
+  .get(getTour)
+  .patch(updateTour)
+  .delete(deleteTour);
 
 export default router;
