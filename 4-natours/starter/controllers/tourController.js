@@ -1,4 +1,5 @@
 import Tour from '../models/tourModel.js';
+import APIFeatures from '../utils/apiFeatures.js';
 
 // Middleware for an alias that returns the top 5 in ratings & cheapest tours
 const aliasTopTours = (request, response, next) => {
@@ -11,65 +12,16 @@ const aliasTopTours = (request, response, next) => {
 // ------------- 2) Route Handlers -------------
 const getAllTours = async (request, response) => {
   try {
-    console.log(request.query);
-    // 1) BUILD QUERY
-    // 1A) query filtering
-    const parsedQuery = { ...request.query };
-
-    const excludedFields = [
-      'page',
-      'sort',
-      'limit',
-      'fields',
-    ];
-    excludedFields.forEach(
-      (element) => delete parsedQuery[element],
-    );
-
-    // 1B) Advanced query filtering: Convert operators to MongoDB format
-    let queryStr = JSON.stringify(parsedQuery);
-    queryStr = queryStr.replace(
-      /\b(gte|gt|lte|lt)\b/g,
-      (match) => `$${match}`,
-    );
-
-    const mongoQuery = JSON.parse(queryStr);
-
-    // 2) SORTING
-    let query = Tour.find(mongoQuery);
-    if (request.query.sort) {
-      const sortBy = request.query.sort
-        .split(',')
-        .join(' ');
-      query = query.sort(sortBy);
-    }
-
-    // 3) FIELD LIMITING
-    if (request.query.fields) {
-      const fields = request.query.fields
-        .split(',')
-        .join(' ');
-      query = query.select(fields);
-    } else {
-      query = query.select('-__v');
-    }
-
-    // 4) PAGINATION
-    const page = Number(request.query.page * 1) || 1;
-    const limit = Number(request.query.limit) || 100;
-    const skip = (page - 1) * limit;
-
-    // page=2&limit=10 means: tours 1-10 for page 1, 11-20 for page 2, 21-30 for page 3, ...
-    query = query.skip(skip).limit(limit);
-
-    if (request.query.page) {
-      const tourAmount = await Tour.countDocuments();
-      if (skip >= tourAmount)
-        throw new Error('This page does not exist');
-    }
-
     // EXECUTE QUERY
-    const tours = await query;
+    const features = new APIFeatures(
+      Tour.find(),
+      request.query,
+    )
+      .filter()
+      .sort()
+      .limitFields()
+      .paginate();
+    const tours = await features.query;
 
     // SEND RESPONSE
     response.status(200).json({
