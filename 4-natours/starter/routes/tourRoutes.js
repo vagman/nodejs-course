@@ -7,6 +7,7 @@ import {
   updateTour,
   deleteTour,
   getTourStats,
+  getMonthlyPlan,
 } from '../controllers/tourController.js';
 
 const router = express.Router();
@@ -17,6 +18,10 @@ router
   .get(aliasTopTours, getAllTours);
 
 router.route('/tour-stats').get(getTourStats);
+
+router
+  .route('/monthly-plan/:year')
+  .get(getMonthlyPlan);
 
 router
   .route('/')

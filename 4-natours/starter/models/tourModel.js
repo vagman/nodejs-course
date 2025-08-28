@@ -56,7 +56,7 @@ const tourSchema = new Schema({
     // Hiding sensitive data fields
     select: false,
   },
-  startDate: [Date],
+  startDates: [Date],
 });
 
 const Tour = mongoose.model('Tour', tourSchema);

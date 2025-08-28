@@ -165,6 +165,31 @@ const getTourStats = async (request, response) => {
   }
 };
 
+// TODO TASK: Implement an aggregation function that calculates the busiest month of a given year.
+
+const getMonthlyPlan = async (request, response) => {
+  try {
+    const year = request.params.year * 1;
+    const plan = await Tour.aggregate([
+      {
+        $unwind: '$startDates',
+      },
+    ]);
+
+    response.status(200).json({
+      status: 'success',
+      data: {
+        plan,
+      },
+    });
+  } catch (error) {
+    response.status(404).json({
+      status: 'fail',
+      message: error,
+    });
+  }
+};
+
 export {
   aliasTopTours,
   getAllTours,
@@ -173,4 +198,5 @@ export {
   updateTour,
   deleteTour,
   getTourStats,
+  getMonthlyPlan,
 };
