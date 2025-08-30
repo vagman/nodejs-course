@@ -66,9 +66,7 @@ const tourSchema = new Schema(
     startDates: [Date],
   },
   {
-    toJSON: {
-      virtuals: true,
-    },
+    toJSON: { virtuals: true },
     toObject: { virtuals: true },
   },
 );
