@@ -104,7 +104,7 @@ const updateTour = async (request, response) => {
   } catch (error) {
     response.status(400).json({
       status: 'fail',
-      message: 'Invalid data sent!',
+      message: error.message,
     });
   }
 };
