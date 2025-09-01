@@ -3,6 +3,9 @@ import express from 'express';
 import qs from 'qs';
 import { fileURLToPath } from 'node:url';
 import { dirname } from 'node:path';
+
+import AppError from './utils/appError.js';
+import globalErrorHandler from './controllers/errorController.js';
 import tourRouter from './routes/tourRoutes.js';
 import userRouter from './routes/userRoutes.js';
 
@@ -30,30 +33,15 @@ app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
 
 app.all('/{*any}', (request, response, next) => {
-  // response.status(404).json({
-  //   status: 'Fail',
-  //   message: `Can't find ${request.originalUrl} on this server!`,
-  // });
-
-  const error = new Error(
-    `Can't find ${request.originalUrl} on this server!`,
+  next(
+    new AppError(
+      `Can't find ${request.originalUrl} on this server!`,
+      404,
+    ),
   );
-  error.status = 'fail';
-  error.statusCode = 404;
-
-  next(error);
 });
 
 // ERROR-HANDLING MIDDLEWARE
-app.use((error, request, response, next) => {
-  console.log(error.statusCode);
-  response.status(error.statusCode || 500);
-  error.status = error.status || 'error';
-
-  response.status(error.statusCode).json({
-    status: error.status,
-    message: error.message,
-  });
-});
+app.use(globalErrorHandler);
 
 export default app;
