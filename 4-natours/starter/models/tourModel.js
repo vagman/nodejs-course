@@ -115,7 +115,16 @@ tourSchema.post(/^find/, function (docs, next) {
   console.log(
     `Query took ${Date.now() - this.start} milliseconds!`,
   );
-  console.log(docs);
+  next();
+});
+
+// Aggregation middleware - remove secret tours from the results
+tourSchema.pre('aggregate', function (next) {
+  console.log(
+    this._pipeline.unshift({
+      $match: { secretTour: { $ne: true } },
+    }),
+  );
   next();
 });
 
