@@ -4,11 +4,11 @@ const globalErrorHandler = (
   response,
   next,
 ) => {
-  console.log(error.stack);
+  // console.log(error.stack);
   response.status(error.statusCode || 500);
   error.status = error.status || 'error';
 
-  response.status(error.statusCode).json({
+  response.json({
     status: error.status,
     message: error.message,
   });
