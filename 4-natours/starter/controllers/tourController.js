@@ -1,6 +1,7 @@
 import Tour from '../models/tourModel.js';
 import APIFeatures from '../utils/apiFeatures.js';
 import catchAsync from '../utils/catchAsync.js';
+import AppError from '../utils/appError.js';
 
 // Middleware for an alias that returns the top 5 in ratings & cheapest tours
 const aliasTopTours = (request, response, next) => {
@@ -42,6 +43,16 @@ const getTour = catchAsync(
     );
     // Tour.findOne({ _id: request.params.id })
 
+    // FIX: Get Tour request returns HTTP status 200 instead of 404 when /tours/:id is null
+    if (!tour) {
+      return next(
+        new AppError(
+          'No tour found with that ID',
+          404,
+        ),
+      );
+    }
+
     response.status(200).json({
       status: 'success',
       data: {
@@ -75,6 +86,15 @@ const updateTour = catchAsync(
       },
     );
 
+    if (!tour) {
+      return next(
+        new AppError(
+          'No tour found with that ID',
+          404,
+        ),
+      );
+    }
+
     response.status(200).json({
       status: 'success',
       data: {
@@ -86,7 +106,18 @@ const updateTour = catchAsync(
 
 const deleteTour = catchAsync(
   async (request, response, next) => {
-    await Tour.findByIdAndDelete(request.params.id);
+    const tour = await Tour.findByIdAndDelete(
+      request.params.id,
+    );
+
+    if (!tour) {
+      return next(
+        new AppError(
+          'No tour found with that ID',
+          404,
+        ),
+      );
+    }
 
     response.status(204).json({
       status: 'success',
