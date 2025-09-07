@@ -3,7 +3,7 @@ import slugify from 'slugify';
 // import validator from 'validator';
 import { Schema } from 'mongoose';
 
-const tourSchema = new Schema(
+const tourSchema = new mongoose.Schema(
   {
     name: {
       type: String,
