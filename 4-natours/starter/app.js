@@ -10,7 +10,7 @@ import tourRouter from './routes/tourRoutes.js';
 import userRouter from './routes/userRoutes.js';
 
 const app = express();
-app.set('query parser', (str) => qs.parse(str));
+app.set('query parser', str => qs.parse(str));
 
 // ------------ 1) Middleware Functions -------------
 // Middleware: function that modifies the incoming request data
