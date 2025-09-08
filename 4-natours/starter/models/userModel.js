@@ -8,10 +8,7 @@ const userSchema = new mongoose.Schema({
     required: [true, 'Please tell us your name'],
     unique: true,
     trim: true,
-    maxlength: [
-      40,
-      'A user name must have less or equal than 40 characters',
-    ],
+    maxlength: [40, 'A user name must have less or equal than 40 characters'],
   },
   email: {
     type: String,
@@ -19,10 +16,7 @@ const userSchema = new mongoose.Schema({
     unique: true,
     trim: true,
     lowercase: true,
-    validate: [
-      validator.isEmail,
-      'Please provide a valid email',
-    ],
+    validate: [validator.isEmail, 'Please provide a valid email'],
   },
   photo: {
     type: String,
@@ -31,6 +25,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Please provide a password'],
     minlength: 8,
+    select: false,
   },
   passwordConfirm: {
     type: String,
@@ -57,6 +52,13 @@ userSchema.pre('save', async function (next) {
   this.passwordConfirm = undefined;
   next();
 });
+
+userSchema.methods.correctPassword = async function (
+  candidatePassword,
+  userPassword,
+) {
+  return await bcrypt.compare(candidatePassword, userPassword);
+};
 
 const User = mongoose.model('User', userSchema);
 
