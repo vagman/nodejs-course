@@ -14,13 +14,10 @@ app.set('query parser', str => qs.parse(str));
 
 // ------------ 1) Middleware Functions -------------
 // Middleware: function that modifies the incoming request data
-if (process.env.NODE_ENV === 'development')
-  app.use(morgan('dev'));
+if (process.env.NODE_ENV === 'development') app.use(morgan('dev'));
 app.use(express.json());
 
-const __dirname = dirname(
-  fileURLToPath(import.meta.url),
-);
+const __dirname = dirname(fileURLToPath(import.meta.url));
 app.use(express.static(`${__dirname}/public`));
 
 app.use((request, response, next) => {
@@ -33,12 +30,7 @@ app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
 
 app.all('/{*any}', (request, response, next) => {
-  next(
-    new AppError(
-      `Can't find ${request.originalUrl} on this server!`,
-      404,
-    ),
-  );
+  next(new AppError(`Can't find ${request.originalUrl} on this server!`, 404));
 });
 
 // ERROR-HANDLING MIDDLEWARE

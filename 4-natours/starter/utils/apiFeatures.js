@@ -8,22 +8,12 @@ class APIFeatures {
     // 1) BUILD QUERY
     // 1A) query filtering
     const parsedQuery = { ...this.queryString };
-    const excludedFields = [
-      'page',
-      'sort',
-      'limit',
-      'fields',
-    ];
-    excludedFields.forEach(
-      (element) => delete parsedQuery[element],
-    );
+    const excludedFields = ['page', 'sort', 'limit', 'fields'];
+    excludedFields.forEach(element => delete parsedQuery[element]);
 
     // 1B) Advanced query filtering: Convert operators to MongoDB format
     let queryStr = JSON.stringify(parsedQuery);
-    queryStr = queryStr.replace(
-      /\b(gte|gt|lte|lt)\b/g,
-      (match) => `$${match}`,
-    );
+    queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, match => `$${match}`);
 
     return this;
   }
@@ -33,9 +23,7 @@ class APIFeatures {
     // const mongoQuery = JSON.parse(queryStr);
     // let query = Tour.find(mongoQuery);
     if (this.queryString.sort) {
-      const sortBy = this.queryString.sort
-        .split(',')
-        .join(' ');
+      const sortBy = this.queryString.sort.split(',').join(' ');
       this.query = this.query.sort(sortBy);
     }
 
@@ -45,9 +33,7 @@ class APIFeatures {
   limitFields() {
     // 3) FIELD LIMITING
     if (this.queryString.fields) {
-      const fields = this.queryString.fields
-        .split(',')
-        .join(' ');
+      const fields = this.queryString.fields.split(',').join(' ');
       this.query = this.query.select(fields);
     } else {
       this.query = this.query.select('-__v');
@@ -58,10 +44,8 @@ class APIFeatures {
 
   paginate() {
     // 4) PAGINATION
-    const page =
-      Number(this.queryString.page * 1) || 1;
-    const limit =
-      Number(this.queryString.limit) || 100;
+    const page = Number(this.queryString.page * 1) || 1;
+    const limit = Number(this.queryString.limit) || 100;
     const skip = (page - 1) * limit;
 
     // page=2&limit=10 means: tours 1-10 for page 1, 11-20 for page 2, 21-30 for page 3, ...

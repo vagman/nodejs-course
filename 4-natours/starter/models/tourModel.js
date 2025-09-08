@@ -10,14 +10,8 @@ const tourSchema = new mongoose.Schema(
       required: [true, 'A tour must have a name'],
       unique: true,
       trim: true,
-      maxlength: [
-        40,
-        'A tour name must have less or equal than 40 characters',
-      ],
-      minlength: [
-        10,
-        'A tour name must have more or equal than 10 characters',
-      ],
+      maxlength: [40, 'A tour name must have less or equal than 40 characters'],
+      minlength: [10, 'A tour name must have more or equal than 10 characters'],
       // Useful validation for function for email validation
       // validate: [
       //   validator.isAlpha,
@@ -41,21 +35,14 @@ const tourSchema = new mongoose.Schema(
     },
     maxGroupSize: {
       type: Number,
-      required: [
-        true,
-        'A tour must have a group size',
-      ],
+      required: [true, 'A tour must have a group size'],
     },
     difficulty: {
       type: String,
-      required: [
-        true,
-        'A tour must have a difficulty',
-      ],
+      required: [true, 'A tour must have a difficulty'],
       enum: {
         values: ['easy', 'medium', 'difficult'],
-        message:
-          'Difficulty is either, easy, medium or difficult',
+        message: 'Difficulty is either, easy, medium or difficult',
       },
     },
     price: {
@@ -69,8 +56,7 @@ const tourSchema = new mongoose.Schema(
           // Validate discount price. "this" only points to current doc on NEW document creation
           return value < this.price;
         },
-        message:
-          'Discount price ({VALUE}) must be below regular price.',
+        message: 'Discount price ({VALUE}) must be below regular price.',
       },
     },
     summary: {
@@ -84,10 +70,7 @@ const tourSchema = new mongoose.Schema(
     },
     imageCover: {
       type: String,
-      required: [
-        true,
-        ' A tour must have an image cover',
-      ],
+      required: [true, ' A tour must have an image cover'],
     },
     images: [String],
     createdAt: {
@@ -143,9 +126,7 @@ tourSchema.pre(/^find/, function (next) {
 });
 
 tourSchema.post(/^find/, function (docs, next) {
-  console.log(
-    `Query took ${Date.now() - this.start} milliseconds!`,
-  );
+  console.log(`Query took ${Date.now() - this.start} milliseconds!`);
   next();
 });
 

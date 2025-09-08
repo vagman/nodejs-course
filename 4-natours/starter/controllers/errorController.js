@@ -29,6 +29,12 @@ const handleValidationErrorDB = error => {
   return new AppError(message, 400);
 };
 
+const handleJWTError = () =>
+  new AppError('Invalid token. Please log in again!', 401);
+
+const handleJWTExpired = () =>
+  new AppError('Your token has expired! Please log in again.', 401);
+
 const sendErrorProd = (error, response) => {
   // Operational, trusted error: send message to client
   if (error.isOperational) {
@@ -50,12 +56,7 @@ const sendErrorProd = (error, response) => {
   }
 };
 
-const globalErrorHandler = (
-  error,
-  request,
-  response,
-  next,
-) => {
+const globalErrorHandler = (error, request, response, next) => {
   // console.log(error.stack);
   (response.status(error.statusCode || 500),
     (error.status = error.status || 'error'));
@@ -67,14 +68,13 @@ const globalErrorHandler = (
     let errorObj = { ...error };
     errorObj.message = error.message;
 
-    if (error.name === 'CastError')
-      errorObj = handleCastErrorDB(error);
-    if (error.code === 11000)
-      errorObj = handleDuplicateFieldDB(error);
-    if (error.name === 'ValidationError') {
+    if (error.name === 'CastError') errorObj = handleCastErrorDB(error);
+    if (error.code === 11000) errorObj = handleDuplicateFieldDB(error);
+    if (error.name === 'ValidationError')
       errorObj = handleValidationErrorDB(error);
-      // console.log(errorObj);
-    }
+    if (error.name === 'JsonWebTokenError') errorObj = handleJWTError();
+    if (error.name === 'TokenExpiredError') errorObj = handleJWTExpired();
+
     sendErrorProd(errorObj, response);
   }
 };
