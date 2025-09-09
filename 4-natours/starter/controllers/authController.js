@@ -17,6 +17,7 @@ const signup = catchAsync(async (request, response, next) => {
     password: request.body.password,
     passwordConfirm: request.body.passwordConfirm,
     passwordChangedAt: request.body.passwordChangedAt,
+    role: request.body.role,
   });
 
   const token = signToken(newUser._id);
