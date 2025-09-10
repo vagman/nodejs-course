@@ -95,4 +95,17 @@ const protect = catchAsync(async (request, response, next) => {
   next();
 });
 
-export { signup, login, protect };
+const restrictTo = (...roles) => {
+  return (request, response, next) => {
+    // roles ['admin', 'lead-guide']. role='user'
+    if (!roles.includes(request.user.role)) {
+      return next(
+        new AppError('You do not have permission to perform this action', 403), // 403: forbidden
+      );
+    }
+
+    next();
+  };
+};
+
+export { signup, login, protect, restrictTo };
