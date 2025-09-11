@@ -1,21 +1,28 @@
 import express from 'express';
-import * as userController from '../controllers/userController.js';
-import * as authController from '../controllers/authController.js';
+import {
+  getAllUsers,
+  createUser,
+  getUser,
+  updateUser,
+  deleteUser,
+} from '../controllers/userController.js';
+import {
+  login,
+  signup,
+  forgotPassword,
+  resetPassword,
+} from '../controllers/authController.js';
 
 const router = express.Router();
 
-router.post('/signup', authController.signup);
-router.post('/login', authController.login);
+router.post('/signup', signup);
+router.post('/login', login);
 
-router
-  .route('/')
-  .get(userController.getAllUsers)
-  .post(userController.createUser);
+router.post('/forgotPassword', forgotPassword);
+router.post('/resetPassword', resetPassword);
 
-router
-  .route('/:id')
-  .get(userController.getUser)
-  .patch(userController.updateUser)
-  .delete(userController.deleteUser);
+router.route('/').get(getAllUsers).post(createUser);
+
+router.route('/:id').get(getUser).patch(updateUser).delete(deleteUser);
 
 export default router;
