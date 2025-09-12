@@ -12,6 +12,18 @@ const signToken = id => {
   });
 };
 
+const createSendToken = (user, statusCode, response) => {
+  const token = signToken(user._id);
+
+  response.status(statusCode).json({
+    status: 'success',
+    token,
+    data: {
+      user,
+    },
+  });
+};
+
 const signup = catchAsync(async (request, response, next) => {
   const newUser = await User.create({
     name: request.body.name,
@@ -22,15 +34,7 @@ const signup = catchAsync(async (request, response, next) => {
     role: request.body.role,
   });
 
-  const token = signToken(newUser._id);
-
-  response.status(201).json({
-    status: 'success',
-    token,
-    data: {
-      user: newUser,
-    },
-  });
+  createSendToken(newUser, 201, response);
 });
 
 const login = catchAsync(async (request, response, next) => {
@@ -49,11 +53,7 @@ const login = catchAsync(async (request, response, next) => {
   }
 
   // 3) If everything ok, send token back to client
-  const token = signToken(user._id);
-  response.status(200).json({
-    status: 'success',
-    token,
-  });
+  createSendToken(user, 200, response);
 });
 
 const protect = catchAsync(async (request, response, next) => {
@@ -152,7 +152,7 @@ const forgotPassword = catchAsync(async (request, response, next) => {
 });
 
 const resetPassword = catchAsync(async (request, response, next) => {
-  // 1. Get user based on the token
+  // 1) Get user based on the token
   const hashedToken = crypto
     .createHash('sha256')
     .update(request.params.token)
@@ -160,12 +160,10 @@ const resetPassword = catchAsync(async (request, response, next) => {
 
   const user = await User.findOne({
     passwordResetToken: hashedToken,
-    passwordResetExpires: {
-      $gt: Date.now(),
-    },
+    passwordResetExpires: { $gt: Date.now() },
   });
 
-  // 2. If token has expired and there is a user, set the new password
+  // 2) If token has not expired, and there is user, set the new password
   if (!user) {
     return next(new AppError('Token is invalid or has expired', 400));
   }
@@ -175,15 +173,38 @@ const resetPassword = catchAsync(async (request, response, next) => {
   user.passwordResetExpires = undefined;
   await user.save();
 
-  // 3. Update changedPasswordAt property for the user
-
-  // 4. Log the user in, send JWT
-  const token = signToken(user._id);
-
-  response.status(200).json({
-    status: 'success',
-    token,
-  });
+  // 3) Update changedPasswordAt property for the user
+  // 4) Log the user in, send JWT
+  createSendToken(user, 200, response);
 });
 
-export { signup, login, protect, restrictTo, forgotPassword, resetPassword };
+const updatePassword = catchAsync(async (request, response, next) => {
+  // 1) Get user from collection
+  const user = await User.findById(request.user.id).select('+password');
+
+  // 2) Check if POSTed current password is correct
+  if (
+    !(await user.correctPassword(request.body.passwordCurrent, user.password))
+  ) {
+    return next(new AppError('Your current password is wrong.', 401));
+  }
+
+  // 3) If so, update password
+  user.password = request.body.password;
+  user.passwordConfirm = request.body.passwordConfirm;
+  await user.save();
+  // User.findByIdAndUpdate will NOT work as intended!
+
+  // 4) Log user in, send JWT
+  createSendToken(user, 200, response);
+});
+
+export {
+  signup,
+  login,
+  protect,
+  restrictTo,
+  forgotPassword,
+  resetPassword,
+  updatePassword,
+};
