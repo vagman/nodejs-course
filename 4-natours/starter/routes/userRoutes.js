@@ -2,6 +2,7 @@ import express from 'express';
 import {
   getAllUsers,
   createUser,
+  updateCurrentUserData,
   getUser,
   updateUser,
   deleteUser,
@@ -24,6 +25,7 @@ router.post('/forgotPassword', forgotPassword);
 router.patch('/resetPassword/:token', resetPassword);
 
 router.patch('/updateMyPassword', protect, updatePassword);
+router.patch('/updateMe', protect, updateCurrentUserData);
 
 router.route('/').get(getAllUsers).post(createUser);
 

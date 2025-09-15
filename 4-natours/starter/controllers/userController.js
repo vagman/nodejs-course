@@ -1,5 +1,14 @@
 import User from '../models/userModel.js';
 import catchAsync from '../utils/catchAsync.js';
+import AppError from './../utils/appError.js';
+
+const filterObject = (obj, ...allowedFields) => {
+  const newObject = {};
+  Object.keys(obj).forEach(element => {
+    if (allowedFields.includes(element)) newObject[element] = obj[element];
+  });
+  return newObject;
+};
 
 // ------------- 2) Route Handlers -------------
 const getAllUsers = catchAsync(async (request, response, next) => {
@@ -13,6 +22,36 @@ const getAllUsers = catchAsync(async (request, response, next) => {
     data: {
       users,
     },
+  });
+});
+
+const updateCurrentUserData = catchAsync(async (request, response, next) => {
+  // 1) Create error if user POSTs password data
+  if (request.body.password || request.body.passwordConfirm) {
+    return next(
+      new AppError(
+        'This route is not for password updates. Please use /updateMyPassword',
+        400,
+      ),
+    );
+  }
+
+  // 2) Filtered out unwanted fields names that are not allowed to be updated
+  const filteredBody = filterObject(request.body, 'name', 'email');
+
+  // 3) Update user document
+  const updatedUser = await User.findByIdAndUpdate(
+    request.user.id,
+    filteredBody,
+    {
+      new: true,
+      runValidator: true,
+    },
+  );
+
+  response.status(200).json({
+    status: 'success',
+    data: updatedUser,
   });
 });
 
@@ -44,4 +83,11 @@ const deleteUser = (request, response) => {
   });
 };
 
-export { getAllUsers, createUser, getUser, updateUser, deleteUser };
+export {
+  getAllUsers,
+  updateCurrentUserData,
+  createUser,
+  getUser,
+  updateUser,
+  deleteUser,
+};
