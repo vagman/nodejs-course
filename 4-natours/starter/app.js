@@ -1,6 +1,8 @@
 import morgan from 'morgan';
 import express from 'express';
 import qs from 'qs';
+import rateLimit from 'express-rate-limit';
+
 import { fileURLToPath } from 'node:url';
 import { dirname } from 'node:path';
 
@@ -16,6 +18,13 @@ app.set('query parser', str => qs.parse(str));
 // Middleware: function that modifies the incoming request data
 if (process.env.NODE_ENV === 'development') app.use(morgan('dev'));
 app.use(express.json());
+
+const limiter = rateLimit({
+  max: 100,
+  windowM: 60 * 60 * 1000,
+  message: 'Too many requests from this IP, please try again in an hour!',
+});
+app.use('/api', limiter);
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 app.use(express.static(`${__dirname}/public`));
