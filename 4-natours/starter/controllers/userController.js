@@ -62,6 +62,15 @@ const createUser = (request, response) => {
   });
 };
 
+const deleteUser = catchAsync(async (request, response, next) => {
+  await User.findByIdAndUpdate(request.user.id, { active: false });
+
+  response.status(204).json({
+    status: 'success',
+    data: null,
+  });
+});
+
 const getUser = (request, response) => {
   response.status(500).json({
     status: 'error',
@@ -70,13 +79,6 @@ const getUser = (request, response) => {
 };
 
 const updateUser = (request, response) => {
-  response.status(500).json({
-    status: 'error',
-    message: 'This route is not yet defined.',
-  });
-};
-
-const deleteUser = (request, response) => {
   response.status(500).json({
     status: 'error',
     message: 'This route is not yet defined.',
