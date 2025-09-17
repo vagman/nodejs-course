@@ -57,7 +57,18 @@ app.use((req, res, next) => {
 app.use(mongoSanitize());
 
 // Prevent parameter pollution
-app.use(hpp());
+app.use(
+  hpp({
+    whitelist: [
+      'duration',
+      'ratingsQuantity',
+      'ratingsAverage',
+      'maxGroupSize',
+      'difficulty',
+      'price',
+    ],
+  }),
+);
 
 // Serving static files
 const __dirname = dirname(fileURLToPath(import.meta.url));
