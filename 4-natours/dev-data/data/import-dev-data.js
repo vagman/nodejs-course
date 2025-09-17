@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 import { fileURLToPath } from 'node:url';
@@ -22,7 +23,7 @@ mongoose
 
 // Reading JSON File
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const tours = JSON.parse(readFileSync(`${__dirname}/tours-simple.json`));
+const tours = JSON.parse(readFileSync(`${__dirname}/tours.json`));
 
 // Import Data to MongoDB
 const importData = async () => {

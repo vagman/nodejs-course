@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import mongoose from 'mongoose';
 import slugify from 'slugify';
 import { Schema } from 'mongoose';
@@ -83,6 +84,30 @@ const tourSchema = new Schema(
       type: Boolean,
       default: false,
     },
+    startLocation: {
+      // GeoJSON
+      type: {
+        type: String,
+        default: 'Point',
+        enum: ['Point'],
+      },
+      coordinates: [Number],
+      address: String,
+      description: String,
+    },
+    locations: [
+      {
+        type: {
+          type: String,
+          default: 'Point',
+          enum: ['Point'],
+        },
+        coordinates: [Number],
+        address: String,
+        description: String,
+        day: Number,
+      },
+    ],
   },
   {
     toJSON: { virtuals: true },
