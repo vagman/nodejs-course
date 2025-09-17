@@ -1,9 +1,8 @@
 import mongoose from 'mongoose';
 import slugify from 'slugify';
-// import validator from 'validator';
 import { Schema } from 'mongoose';
 
-const tourSchema = new mongoose.Schema(
+const tourSchema = new Schema(
   {
     name: {
       type: String,

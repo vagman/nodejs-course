@@ -4,7 +4,6 @@ import qs from 'qs';
 import rateLimit from 'express-rate-limit';
 import helmet from 'helmet';
 import mongoSanitize from 'express-mongo-sanitize';
-import validator from 'validator';
 import hpp from 'hpp';
 
 import { fileURLToPath } from 'node:url';
@@ -38,29 +37,24 @@ app.use(express.json({ limit: '10kb' }));
 // Set query parser AFTER body parser
 app.set('query parser', str => qs.parse(str));
 
-// Data sanitization against NoSQL query injection - configure for Express 5
-app.use(mongoSanitize({ replaceWith: '_' }));
-
-// Data sanitization against XSS (Cross-Site Scripting) attacks
+// FIX: Make req.query writable before mongoSanitize (EXPRESS 5 COMPATIBILITY)
 app.use((req, res, next) => {
-  const clean = obj => {
-    if (obj && typeof obj === 'object') {
-      for (const key in obj) {
-        if (typeof obj[key] === 'string') {
-          obj[key] = validator.escape(obj[key]);
-        } else if (typeof obj[key] === 'object') {
-          clean(obj[key]);
-        }
-      }
-    }
-  };
+  // Create a writable copy of req.query
+  const queryObj = { ...req.query };
 
-  if (req.body) clean(req.body);
-  if (req.query) clean(req.query);
-  if (req.params) clean(req.params);
+  // Redefine req.query as a writable property
+  Object.defineProperty(req, 'query', {
+    value: queryObj,
+    writable: true,
+    enumerable: true,
+    configurable: true,
+  });
 
   next();
 });
+
+// Data sanitization against NoSQL query injection - configure for Express 5
+app.use(mongoSanitize());
 
 // Prevent parameter pollution
 app.use(hpp());
