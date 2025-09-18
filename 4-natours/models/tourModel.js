@@ -2,7 +2,7 @@
 import mongoose from 'mongoose';
 import slugify from 'slugify';
 import { Schema } from 'mongoose';
-import User from './userModel.js';
+// import User from './userModel.js';
 
 const tourSchema = new Schema(
   {
@@ -109,7 +109,7 @@ const tourSchema = new Schema(
         day: Number,
       },
     ],
-    guides: Array,
+    guides: [{ type: mongoose.Schema.ObjectId, ref: 'User' }],
   },
   {
     toJSON: { virtuals: true },
@@ -128,14 +128,13 @@ tourSchema.pre('save', function (next) {
   next();
 });
 
-tourSchema.pre('save', async function (next) {
-  const guidesPromises = this.guides.map(
-    async userId => await User.findById(userId),
-  );
-  this.guides = await Promise.all(guidesPromises);
-
-  next();
-});
+// tourSchema.pre('save', async function (next) {
+//   const guidesPromises = this.guides.map(
+//     async userId => await User.findById(userId),
+//   );
+//   this.guides = await Promise.all(guidesPromises);
+//   next();
+// });
 
 // tourSchema.pre('save', function (next) {
 //   console.log('Will save document...');
