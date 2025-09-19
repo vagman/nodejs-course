@@ -17,6 +17,10 @@ const getAllReviews = catchAsync(async (request, response, next) => {
 });
 
 const createReview = catchAsync(async (request, response, next) => {
+  // Allow nested routes
+  if (!request.body.tour) request.body.tour = request.params.tourId;
+  if (!request.body.user) request.body.user = request.user.id;
+
   const newReview = await Review.create(request.body);
 
   // SEND RESPONSE
