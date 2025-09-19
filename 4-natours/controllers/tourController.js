@@ -32,7 +32,7 @@ const getAllTours = catchAsync(async (request, response, next) => {
 });
 
 const getTour = catchAsync(async (request, response, next) => {
-  const tour = await Tour.findById(request.params.id);
+  const tour = await Tour.findById(request.params.id).populate('reviews');
   // Tour.findOne({ _id: request.params.id })
 
   // FIX: Get Tour request returns HTTP status 200 instead of 404 when /tours/:id is null
