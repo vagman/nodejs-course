@@ -2,6 +2,7 @@ import Tour from '../models/tourModel.js';
 import APIFeatures from '../utils/apiFeatures.js';
 import catchAsync from '../utils/catchAsync.js';
 import AppError from '../utils/appError.js';
+import * as factory from './handlerFactory.js';
 
 // Middleware for an alias that returns the top 5 in ratings & cheapest tours
 const aliasTopTours = (request, response, next) => {
@@ -77,18 +78,20 @@ const updateTour = catchAsync(async (request, response, next) => {
   });
 });
 
-const deleteTour = catchAsync(async (request, response, next) => {
-  const tour = await Tour.findByIdAndDelete(request.params.id);
+const deleteTour = factory.deleteOne(Tour);
 
-  if (!tour) {
-    return next(new AppError('No tour found with that ID', 404));
-  }
+// const deleteTour = catchAsync(async (request, response, next) => {
+//   const tour = await Tour.findByIdAndDelete(request.params.id);
 
-  response.status(204).json({
-    status: 'success',
-    data: null,
-  });
-});
+//   if (!tour) {
+//     return next(new AppError('No tour found with that ID', 404));
+//   }
+
+//   response.status(204).json({
+//     status: 'success',
+//     data: null,
+//   });
+// });
 
 const getTourStats = catchAsync(async (request, response, next) => {
   const stats = await Tour.aggregate([

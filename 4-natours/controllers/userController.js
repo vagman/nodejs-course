@@ -1,6 +1,7 @@
 import User from '../models/userModel.js';
 import catchAsync from '../utils/catchAsync.js';
 import AppError from './../utils/appError.js';
+import * as factory from './handlerFactory.js';
 
 const filterObject = (obj, ...allowedFields) => {
   const newObject = {};
@@ -62,7 +63,7 @@ const createUser = (request, response) => {
   });
 };
 
-const deleteUser = catchAsync(async (request, response, next) => {
+const deleteMe = catchAsync(async (request, response, next) => {
   await User.findByIdAndUpdate(request.user.id, { active: false });
 
   response.status(204).json({
@@ -70,6 +71,8 @@ const deleteUser = catchAsync(async (request, response, next) => {
     data: null,
   });
 });
+
+const deleteUser = factory.deleteOne(User);
 
 const getUser = (request, response) => {
   response.status(500).json({
@@ -91,5 +94,6 @@ export {
   createUser,
   getUser,
   updateUser,
+  deleteMe,
   deleteUser,
 };

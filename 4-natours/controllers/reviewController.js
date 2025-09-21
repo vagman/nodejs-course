@@ -1,5 +1,6 @@
 import Review from '../models/reviewModel.js';
 import catchAsync from '../utils/catchAsync.js';
+import * as factory from './handlerFactory.js';
 
 // ------------- 2) Route Handlers -------------
 const getAllReviews = catchAsync(async (request, response, next) => {
@@ -32,4 +33,6 @@ const createReview = catchAsync(async (request, response, next) => {
   });
 });
 
-export { getAllReviews, createReview };
+const deleteReview = factory.deleteOne(Review);
+
+export { getAllReviews, createReview, deleteReview };
