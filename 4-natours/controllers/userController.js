@@ -81,12 +81,8 @@ const getUser = (request, response) => {
   });
 };
 
-const updateUser = (request, response) => {
-  response.status(500).json({
-    status: 'error',
-    message: 'This route is not yet defined.',
-  });
-};
+// Do NOT update passwords with this!
+const updateUser = factory.updateOne(User);
 
 export {
   getAllUsers,

@@ -2,7 +2,9 @@ import express from 'express';
 import {
   getAllReviews,
   createReview,
+  updateReview,
   deleteReview,
+  setTourUserId,
 } from '../controllers/reviewController.js';
 import { protect, restrictTo } from '../controllers/authController.js';
 
@@ -17,8 +19,8 @@ const router = express.Router({
 router
   .route('/')
   .get(getAllReviews)
-  .post(protect, restrictTo('user'), createReview);
+  .post(protect, restrictTo('user'), setTourUserId, createReview);
 
-router.route('/:id').delete(deleteReview);
+router.route('/:id').patch(updateReview).delete(deleteReview);
 
 export default router;
