@@ -5,6 +5,8 @@ import { fileURLToPath } from 'node:url';
 import { dirname } from 'node:path';
 import { readFileSync } from 'node:fs';
 import Tour from '../../models/tourModel.js';
+import User from '../../models/userModel.js';
+import Review from '../../models/reviewModel.js';
 
 dotenv.config({ path: '../../.env' });
 const dbConnectionString = process.env.DATABASE.replace(
@@ -24,11 +26,16 @@ mongoose
 // Reading JSON File
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const tours = JSON.parse(readFileSync(`${__dirname}/tours.json`));
+const users = JSON.parse(readFileSync(`${__dirname}/users.json`));
+const reviews = JSON.parse(readFileSync(`${__dirname}/reviews.json`));
 
 // Import Data to MongoDB
 const importData = async () => {
   try {
     await Tour.create(tours);
+    await User.create(users, { validateBeforeSave: false });
+    await Review.create(reviews);
+
     console.log('Data successfully loaded!');
     process.exit();
   } catch (error) {
@@ -40,6 +47,9 @@ const importData = async () => {
 const deleteData = async () => {
   try {
     await Tour.deleteMany();
+    await User.deleteMany();
+    await Review.deleteMany();
+
     console.log('Data successfully deleted!');
     process.exit();
   } catch (error) {
