@@ -11,6 +11,11 @@ const filterObject = (obj, ...allowedFields) => {
   return newObject;
 };
 
+const getMe = (request, response, next) => {
+  request.params.id = request.user.id;
+  next();
+};
+
 const updateCurrentUserData = catchAsync(async (request, response, next) => {
   // 1) Create error if user POSTs password data
   if (request.body.password || request.body.passwordConfirm) {
@@ -64,6 +69,7 @@ const getUser = factory.getOne(User);
 const updateUser = factory.updateOne(User);
 
 export {
+  getMe,
   getAllUsers,
   updateCurrentUserData,
   createUser,

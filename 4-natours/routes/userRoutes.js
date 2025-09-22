@@ -1,5 +1,6 @@
 import express from 'express';
 import {
+  getMe,
   getAllUsers,
   createUser,
   updateCurrentUserData,
@@ -27,6 +28,7 @@ router.patch('/resetPassword/:token', resetPassword);
 
 router.patch('/updateMyPassword', protect, updatePassword);
 
+router.get('/me', protect, getMe, getUser);
 router.patch('/updateMe', protect, updateCurrentUserData);
 router.delete('/deleteMe', protect, deleteMe);
 
