@@ -35,6 +35,7 @@ const reviewSchema = new Schema(
   {
     toJSON: { virtuals: true },
     toObject: { virtuals: true },
+    strictQuery: true,
   },
 );
 

@@ -1,5 +1,6 @@
 import AppError from './../utils/appError.js';
 import catchAsync from './../utils/catchAsync.js';
+import APIFeatures from '../utils/apiFeatures.js';
 
 export const deleteOne = Model =>
   catchAsync(async (request, response, next) => {
@@ -43,5 +44,43 @@ export const createOne = Model =>
       data: {
         tour: doc,
       },
+    });
+  });
+
+export const getOne = (Model, populateOptions) =>
+  catchAsync(async (request, response, next) => {
+    let query = Model.findById(request.params.id);
+    if (populateOptions) query = query.populate(populateOptions);
+
+    const doc = await query;
+    if (!doc) {
+      return next(new AppError('No document found with that ID', 404));
+    }
+
+    response.status(200).json({
+      status: 'success',
+      data: doc,
+    });
+  });
+
+export const getAll = Model =>
+  catchAsync(async (request, response, next) => {
+    // To allow for nested GET reviews on tour (hack)
+    let filter = {};
+    if (request.params.tourId) filter = { tour: request.params.tourId };
+
+    const features = new APIFeatures(Model.find(filter), request.query)
+      .filter()
+      .sort()
+      .limitFields()
+      .paginate();
+    const doc = await features.query;
+
+    // SEND RESPONSE
+    response.status(200).json({
+      status: 'success',
+      requestedAt: request.requestTime,
+      result: doc.length,
+      data: doc,
     });
   });

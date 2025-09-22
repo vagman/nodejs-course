@@ -1,55 +1,16 @@
 import Tour from '../models/tourModel.js';
-import APIFeatures from '../utils/apiFeatures.js';
 import catchAsync from '../utils/catchAsync.js';
-import AppError from '../utils/appError.js';
 import * as factory from './handlerFactory.js';
 
-// Middleware for an alias that returns the top 5 in ratings & cheapest tours
 const aliasTopTours = (request, response, next) => {
-  // console.log('before', request.query);
   request.url =
     '?limit=5&sort=-ratingsAverage,price&fields=name,price,ratingsAverage,difficulty';
   next();
 };
 
-// ------------- 2) Route Handlers -------------
-const getAllTours = catchAsync(async (request, response, next) => {
-  const features = new APIFeatures(Tour.find(), request.query)
-    .filter()
-    .sort()
-    .limitFields()
-    .paginate();
-  const tours = await features.query;
-
-  // SEND RESPONSE
-  response.status(200).json({
-    status: 'success',
-    requestedAt: request.requestTime,
-    result: tours.length,
-    data: {
-      tours,
-    },
-  });
-});
-
-const getTour = catchAsync(async (request, response, next) => {
-  const tour = await Tour.findById(request.params.id).populate('reviews');
-  // Tour.findOne({ _id: request.params.id })
-
-  // FIX: Get Tour request returns HTTP status 200 instead of 404 when /tours/:id is null
-  if (!tour) {
-    return next(new AppError('No tour found with that ID', 404));
-  }
-
-  response.status(200).json({
-    status: 'success',
-    data: {
-      tour,
-    },
-  });
-});
-
+const getAllTours = factory.getAll(Tour);
 const createTour = factory.createOne(Tour);
+const getTour = factory.getOne(Tour, { path: 'reviews' });
 const updateTour = factory.updateOne(Tour);
 const deleteTour = factory.deleteOne(Tour);
 
