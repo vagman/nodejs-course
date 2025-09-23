@@ -7,7 +7,7 @@ import mongoSanitize from 'express-mongo-sanitize';
 import hpp from 'hpp';
 
 import { fileURLToPath } from 'node:url';
-import { dirname } from 'node:path';
+import path from 'node:path';
 
 import AppError from './utils/appError.js';
 import globalErrorHandler from './controllers/errorController.js';
@@ -17,7 +17,15 @@ import reviewRouter from './routes/reviewRoutes.js';
 
 const app = express();
 
+// Base path to project folder
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+app.set('view engine', 'pug');
+app.set('views', path.join(__dirname, 'views'));
+
 // ------------ 1) Middleware Functions -------------
+// Serving static files
+app.use(express.static(path.join(__dirname, 'public')));
+
 // Set security HTTP headers
 app.use(helmet());
 
@@ -71,10 +79,6 @@ app.use(
   }),
 );
 
-// Serving static files
-const __dirname = dirname(fileURLToPath(import.meta.url));
-app.use(express.static(`${__dirname}/public`));
-
 // Test middleware
 app.use((request, response, next) => {
   request.requestTime = new Date().toISOString();
@@ -82,6 +86,10 @@ app.use((request, response, next) => {
 });
 
 // ------------- 3) Routes -------------
+app.get('/', (request, response) => {
+  response.status(200).render('base');
+});
+
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/reviews', reviewRouter);
