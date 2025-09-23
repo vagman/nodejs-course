@@ -1,6 +1,7 @@
 // Challenge: create the Review Model: review / rating / createdAt / ref to tour / ref to user
 import mongoose from 'mongoose';
 import { Schema } from 'mongoose';
+import Tour from './tourModel.js';
 
 const reviewSchema = new Schema(
   {
@@ -55,6 +56,43 @@ reviewSchema.pre(/^find/, function (next) {
     select: 'name photo',
   });
   next();
+});
+
+reviewSchema.statics.calculateAverageRatings = async function (tourId) {
+  const statistics = await this.aggregate([
+    {
+      $match: { tour: tourId },
+    },
+    {
+      $group: {
+        _id: '$tour',
+        numberOfRatings: { $sum: 1 },
+        averageRating: { $avg: '$rating' },
+      },
+    },
+  ]);
+
+  if (statistics.length > 0) {
+    await Tour.findByIdAndUpdate(tourId, {
+      ratingsQuantity: statistics[0].numberOfRatings,
+      ratingsAverage: statistics[0].averageRating,
+    });
+  } else {
+    await Tour.findByIdAndUpdate(tourId, {
+      ratingsQuantity: 0,
+      ratingsAverage: 4.5,
+    });
+  }
+};
+
+reviewSchema.post('save', function () {
+  // This points to the current review
+  this.constructor.calculateAverageRatings(this.tour);
+});
+
+// Handle updates and deletions of reviews
+reviewSchema.post(/^findOneAnd/, async function (doc) {
+  if (doc) await doc.constructor.calculateAverageRatings(doc.tour);
 });
 
 const Review = mongoose.model('Review', reviewSchema);
