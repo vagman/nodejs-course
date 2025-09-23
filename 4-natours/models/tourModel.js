@@ -186,14 +186,11 @@ tourSchema.post(/^find/, function (docs, next) {
 });
 
 // Aggregation middleware - remove secret tours from the results
-tourSchema.pre('aggregate', function (next) {
-  console.log(
-    this._pipeline.unshift({
-      $match: { secretTour: { $ne: true } },
-    }),
-  );
-  next();
-});
+// tourSchema.pre('aggregate', function (next) {
+//   this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
+//   console.log(this.pipeline());
+//   next();
+// });
 
 const Tour = mongoose.model('Tour', tourSchema);
 export default Tour;
