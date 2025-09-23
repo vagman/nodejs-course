@@ -40,6 +40,9 @@ const reviewSchema = new Schema(
   },
 );
 
+// Preventing duplicate reviews: one user, one review per tour
+reviewSchema.index({ tour: 1, user: 1 }, { unique: true });
+
 reviewSchema.pre(/^find/, function (next) {
   // Turning off tour populate on reviews for performance optimization
 
