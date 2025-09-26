@@ -14,6 +14,7 @@ import globalErrorHandler from './controllers/errorController.js';
 import tourRouter from './routes/tourRoutes.js';
 import userRouter from './routes/userRoutes.js';
 import reviewRouter from './routes/reviewRoutes.js';
+import viewRouter from './routes/viewRoutes.js';
 
 const app = express();
 
@@ -86,25 +87,7 @@ app.use((request, response, next) => {
 });
 
 // ------------- 3) Routes -------------
-app.get('/', (request, response) => {
-  response.status(200).render('base', {
-    tour: 'The Forest Hiker',
-    user: 'John Doe',
-  });
-});
-
-app.get('/overview', (request, response) => {
-  response.status(200).render('overview', {
-    title: 'All Tours',
-  });
-});
-
-app.get('/tour', (request, response) => {
-  response.status(200).render('tour', {
-    title: 'The Forest Hiker Tour',
-  });
-});
-
+app.use('/', viewRouter);
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/reviews', reviewRouter);
