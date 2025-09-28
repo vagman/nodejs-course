@@ -1,6 +1,12 @@
 extends base
 include _reviewCard
 
+block append head
+  link(rel='stylesheet' href='/css/leaflet.css')
+  link(rel='stylesheet' href='/css/leaflet-custom.css')
+  script(src='/js/leaflet.js')
+  script(src='/js/my-leaflet.js' defer)
+
 mixin overviewBox(label, text, icon)
   .overview-box__detail
     svg.overview-box__icon
@@ -17,7 +23,7 @@ block content
     .heading-box
       h1.heading-primary
         span= `${tour.name} tour`
-        .heading-box__group
+      .heading-box__group
         .heading-box__detail
           svg.heading-box__icon
             use(xlink:href='/img/icons.svg#icon-clock')
@@ -64,7 +70,7 @@ block content
         img.picture-box__img(src=`/img/tours/${image}`, alt=`${tour.name} ${index + 1}`, class=`picture-box__img--${index + 1}`)
 
   section.section-map
-    #map
+    #map(data-locations=`${JSON.stringify(tour.locations)}`)
 
   section.section-reviews
     .reviews

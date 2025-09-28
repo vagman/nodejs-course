@@ -27,8 +27,34 @@ app.set('views', path.join(__dirname, 'views'));
 // Serving static files
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Set security HTTP headers
-app.use(helmet());
+// Set security HTTP headers with CSP configuration
+const fontSrcUrls = [
+  'https://fonts.googleapis.com/',
+  'https://fonts.gstatic.com/',
+];
+
+app.use(
+  helmet.contentSecurityPolicy({
+    directives: {
+      defaultSrc: ["'self'"],
+      connectSrc: ["'self'"],
+      scriptSrc: ["'self'"],
+      styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com/'],
+      workerSrc: ["'self'", 'blob:'],
+      objectSrc: [],
+      imgSrc: [
+        "'self'",
+        'blob:',
+        'data:',
+        'https://*.tile.openstreetmap.org',
+        'https://a.tile.openstreetmap.org',
+        'https://b.tile.openstreetmap.org',
+        'https://c.tile.openstreetmap.org',
+      ],
+      fontSrc: ["'self'", ...fontSrcUrls],
+    },
+  }),
+);
 
 // Development Logging
 if (process.env.NODE_ENV === 'development') app.use(morgan('dev'));
