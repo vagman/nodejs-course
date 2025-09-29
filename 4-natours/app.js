@@ -5,6 +5,7 @@ import rateLimit from 'express-rate-limit';
 import helmet from 'helmet';
 import mongoSanitize from 'express-mongo-sanitize';
 import hpp from 'hpp';
+import cookieParser from 'cookie-parser';
 
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
@@ -69,6 +70,7 @@ app.use('/api', limiter);
 
 // Body parser, reading data from body into req.body
 app.use(express.json({ limit: '10kb' }));
+app.use(cookieParser());
 
 // Set query parser AFTER body parser
 app.set('query parser', str => qs.parse(str));
@@ -109,6 +111,7 @@ app.use(
 // Test middleware
 app.use((request, response, next) => {
   request.requestTime = new Date().toISOString();
+  console.log(request.cookies);
   next();
 });
 
