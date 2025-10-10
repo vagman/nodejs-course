@@ -1,7 +1,10 @@
 /* eslint-disable */
+import axios from 'axios';
+import { showAlert } from './alerts';
+
 const login = async (email, password) => {
   try {
-    const result = await axios({
+    const response = await axios({
       method: 'POST',
       url: '/api/v1/users/login',
       data: {
@@ -10,20 +13,15 @@ const login = async (email, password) => {
       },
     });
 
-    if (result.data.status === 'success') {
-      alert('Logged in successfully!');
+    if (response.data.status === 'success') {
+      showAlert('success', 'Logged in successfully!');
       window.setTimeout(() => {
         location.assign('/');
       }, 1500);
     }
   } catch (error) {
-    alert(error.response.data.message);
+    showAlert('error', error.response?.data?.message || 'Something went wrong!');
   }
 };
 
-document.querySelector('.form').addEventListener('submit', event => {
-  event.preventDefault();
-  const email = document.getElementById('email').value;
-  const password = document.getElementById('password').value;
-  login(email, password);
-});
+export default login;
