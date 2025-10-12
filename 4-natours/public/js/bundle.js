@@ -31551,7 +31551,7 @@
         method: "GET",
         url: "/api/v1/users/logout"
       });
-      if (response.data.status === "success") location.reload(true);
+      if (response.data.status === "success") window.location.reload();
     } catch (error) {
       showAlert(
         "error",

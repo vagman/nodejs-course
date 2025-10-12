@@ -11,13 +11,23 @@ const handleDuplicateFieldDB = error => {
   return new AppError(message, 400);
 };
 
-const sendErrorDev = (error, response) => {
-  response.status(error.statusCode || 500).json({
-    status: error.status,
-    error: error,
-    message: error.message,
-    stack: error.stack,
-  });
+const sendErrorDev = (error, request, response) => {
+  // A) API
+  if (request.originalUrl.startsWith('/api')) {
+    response.status(error.statusCode || 500).json({
+      status: error.status,
+      error: error,
+      message: error.message,
+      stack: error.stack,
+    });
+  } else {
+    // B) RENDERED WEBSITE
+    console.error('ERROR 💥', error);
+    response.status(error.statusCode || 500).render('error', {
+      title: 'Something went wrong!',
+      msg: error.message,
+    });
+  }
 };
 
 const handleValidationErrorDB = error => {
@@ -32,28 +42,46 @@ const handleValidationErrorDB = error => {
 const handleJWTError = () =>
   new AppError('Invalid token. Please log in again!', 401);
 
-const handleJWTExpired = () =>
+const handleJWTExpiredError = () =>
   new AppError('Your token has expired! Please log in again.', 401);
 
-const sendErrorProd = (error, response) => {
-  // Operational, trusted error: send message to client
-  if (error.isOperational) {
-    response.status(error.statusCode || 500).json({
-      status: error.status,
-      message: error.message,
-    });
-
-    // Programming or other unknown error: don't leak error details
-  } else {
+const sendErrorProd = (error, request, response) => {
+  // A) API
+  if (request.originalUrl.startsWith('/api')) {
+    // A) Operational, trusted error: send message to client
+    if (error.isOperational) {
+      return response.status(error.statusCode).json({
+        status: error.status,
+        message: error.message,
+      });
+    }
+    // B) Programming or other unknown error: don't leak error details
     // 1) Log error
     console.error('ERROR 💥', error);
-
     // 2) Send generic message
-    response.status(500).json({
+    return response.status(500).json({
       status: 'error',
       message: 'Something went very wrong!',
     });
   }
+
+  // B) RENDERED WEBSITE
+  // A) Operational, trusted error: send message to client
+  if (error.isOperational) {
+    console.log(error);
+    return response.status(error.statusCode).render('error', {
+      title: 'Something went wrong!',
+      msg: error.message,
+    });
+  }
+  // B) Programming or other unknown error: don't leak error details
+  // 1) Log error
+  console.error('ERROR 💥', error);
+  // 2) Send generic message
+  return response.status(error.statusCode).render('error', {
+    title: 'Something went wrong!',
+    msg: 'Please try again later.',
+  });
 };
 
 const globalErrorHandler = (error, request, response, next) => {
@@ -62,20 +90,20 @@ const globalErrorHandler = (error, request, response, next) => {
     (error.status = error.status || 'error'));
 
   if (process.env.NODE_ENV === 'development') {
-    sendErrorDev(error, response);
+    sendErrorDev(error, request, response);
   } else {
     // Hide error details in production
-    let errorObj = { ...error };
-    errorObj.message = error.message;
+    let errorProduction = Object.assign(error);
 
-    if (error.name === 'CastError') errorObj = handleCastErrorDB(error);
-    if (error.code === 11000) errorObj = handleDuplicateFieldDB(error);
+    if (error.name === 'CastError') errorProduction = handleCastErrorDB(error);
+    if (error.code === 11000) errorProduction = handleDuplicateFieldDB(error);
     if (error.name === 'ValidationError')
-      errorObj = handleValidationErrorDB(error);
-    if (error.name === 'JsonWebTokenError') errorObj = handleJWTError();
-    if (error.name === 'TokenExpiredError') errorObj = handleJWTExpired();
+      errorProduction = handleValidationErrorDB(error);
+    if (error.name === 'JsonWebTokenError') errorProduction = handleJWTError();
+    if (error.name === 'TokenExpiredError')
+      errorProduction = handleJWTExpiredError();
 
-    sendErrorProd(errorObj, response);
+    sendErrorProd(errorProduction, request, response);
   }
 };
 

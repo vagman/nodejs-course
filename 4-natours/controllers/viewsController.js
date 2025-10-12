@@ -1,5 +1,6 @@
 import Tour from '../models/tourModel.js';
 import catchAsync from '../utils/catchAsync.js';
+import AppError from '../utils/appError.js';
 
 const getOverview = catchAsync(async (request, response, next) => {
   // 1. Get tour data from collection
@@ -21,6 +22,10 @@ const getTour = catchAsync(async (request, response, next) => {
     path: 'reviews',
     fields: 'review rating user',
   });
+
+  if (!tour) {
+    return next(new AppError('There is no tour with that name', 404));
+  }
 
   // 2. Build template
   // 3. Render that template using tour data from Step 1.
