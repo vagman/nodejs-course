@@ -70,6 +70,11 @@ const login = catchAsync(async (request, response, next) => {
   createSendToken(user, 200, response);
 });
 
+const logout = (request, response) => {
+  response.clearCookie('jwt');
+  response.status(200).json({ status: 'success' });
+};
+
 const protect = catchAsync(async (request, response, next) => {
   let token;
 
@@ -137,6 +142,7 @@ const isLoggedIn = catchAsync(async (request, response, next) => {
 
     // THERE IS A LOGGED IN USER
     response.locals.user = currentUser;
+    return next();
   }
   next();
 });
@@ -252,4 +258,5 @@ export {
   resetPassword,
   updatePassword,
   isLoggedIn,
+  logout,
 };

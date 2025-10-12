@@ -31539,10 +31539,26 @@
         }, 1500);
       }
     } catch (error) {
-      showAlert("error", error.response?.data?.message || "Something went wrong!");
+      showAlert(
+        "error",
+        error.response?.data?.message || "Something went wrong!"
+      );
     }
   };
-  var login_default = login;
+  var logout = async () => {
+    try {
+      const response = await axios_default({
+        method: "GET",
+        url: "/api/v1/users/logout"
+      });
+      if (response.data.status === "success") location.reload(true);
+    } catch (error) {
+      showAlert(
+        "error",
+        error.response?.data?.message || "Something went wrong! Error logging out. Please try again."
+      );
+    }
+  };
 
   // public/js/leaflet.js
   var import_leaflet = __toESM(require_leaflet_src(), 1);
@@ -31562,7 +31578,9 @@
     const points = [];
     locations.forEach((loc) => {
       points.push([loc.coordinates[1], loc.coordinates[0]]);
-      import_leaflet.default.marker([loc.coordinates[1], loc.coordinates[0]]).addTo(map).bindPopup(`<p>Day ${loc.day}: ${loc.description}</p>`, { autoClose: false });
+      import_leaflet.default.marker([loc.coordinates[1], loc.coordinates[0]]).addTo(map).bindPopup(`<p>Day ${loc.day}: ${loc.description}</p>`, {
+        autoClose: false
+      });
     });
     const bounds = import_leaflet.default.latLngBounds(points).pad(1);
     map.setView([0, 0], 1);
@@ -31588,6 +31606,7 @@
   // public/js/index.js
   var mapBox = document.getElementById("map");
   var loginForm = document.querySelector(".form");
+  var logoutBtn = document.querySelector(".nav__el--logout");
   if (mapBox) {
     const locations = JSON.parse(mapBox.dataset.locations);
     leaflet_default(locations);
@@ -31597,9 +31616,10 @@
       event.preventDefault();
       const email = document.getElementById("email").value;
       const password = document.getElementById("password").value;
-      login_default(email, password);
+      login(email, password);
     });
   }
+  if (logoutBtn) logoutBtn.addEventListener("click", logout);
 })();
 /*! Bundled license information:
 

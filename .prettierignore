@@ -1,3 +1,6 @@
 node_modules/
-public/
+public/dist/
+public/img/
+public/css/
+public/js/bundle.js/
 dev-data/

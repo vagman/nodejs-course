@@ -20,8 +20,28 @@ const login = async (email, password) => {
       }, 1500);
     }
   } catch (error) {
-    showAlert('error', error.response?.data?.message || 'Something went wrong!');
+    showAlert(
+      'error',
+      error.response?.data?.message || 'Something went wrong!',
+    );
   }
 };
 
-export default login;
+const logout = async () => {
+  try {
+    const response = await axios({
+      method: 'GET',
+      url: '/api/v1/users/logout',
+    });
+
+    if (response.data.status === 'success') window.location.reload();
+  } catch (error) {
+    showAlert(
+      'error',
+      error.response?.data?.message ||
+        'Something went wrong! Error logging out. Please try again.',
+    );
+  }
+};
+
+export { login, logout };

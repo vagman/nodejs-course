@@ -1,12 +1,13 @@
 import js from '@eslint/js';
 import prettier from 'eslint-config-prettier';
-import prettierPlugin from 'eslint-plugin-prettier';
-import importPlugin from 'eslint-plugin-import';
+import eslintPluginPrettier from 'eslint-plugin-prettier';
+import eslintPluginImport from 'eslint-plugin-import';
 
 export default [
   js.configs.recommended,
   {
     files: ['**/*.js'],
+    ignores: ['node_modules/**', 'dist/**', '.vscode/**'],
     languageOptions: {
       ecmaVersion: 'latest',
       sourceType: 'module',
@@ -23,8 +24,8 @@ export default [
       },
     },
     plugins: {
-      prettier: prettierPlugin,
-      import: importPlugin,
+      prettier: eslintPluginPrettier,
+      import: eslintPluginImport,
     },
     rules: {
       'prettier/prettier': 'error',

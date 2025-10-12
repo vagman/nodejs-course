@@ -1,12 +1,13 @@
 /* eslint-disable */
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
-import login from './login.js';
+import { login, logout } from './login.js';
 import displayMap from './leaflet.js';
 
 // DOM ELEMENTS
 const mapBox = document.getElementById('map');
 const loginForm = document.querySelector('.form');
+const logoutBtn = document.querySelector('.nav__el--logout');
 
 // DELEGATION
 if (mapBox) {
@@ -22,3 +23,5 @@ if (loginForm) {
     login(email, password);
   });
 }
+
+if (logoutBtn) logoutBtn.addEventListener('click', logout);
