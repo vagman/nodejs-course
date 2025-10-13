@@ -1,7 +1,6 @@
 import Tour from '../models/tourModel.js';
 import catchAsync from '../utils/catchAsync.js';
 import AppError from '../utils/appError.js';
-import { title } from 'process';
 
 const getOverview = catchAsync(async (request, response, next) => {
   // 1. Get tour data from collection
