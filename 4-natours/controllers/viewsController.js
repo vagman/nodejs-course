@@ -1,6 +1,7 @@
 import Tour from '../models/tourModel.js';
 import catchAsync from '../utils/catchAsync.js';
 import AppError from '../utils/appError.js';
+import { title } from 'process';
 
 const getOverview = catchAsync(async (request, response, next) => {
   // 1. Get tour data from collection
@@ -41,4 +42,10 @@ const getLoginForm = catchAsync(async (request, response) => {
   });
 });
 
-export { getOverview, getTour, getLoginForm };
+const getAccount = (request, response) => {
+  response.status(200).render('account', {
+    title: 'Your account',
+  });
+};
+
+export { getOverview, getTour, getLoginForm, getAccount };
