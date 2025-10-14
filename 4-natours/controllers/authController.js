@@ -222,7 +222,7 @@ const resetPassword = catchAsync(async (request, response, next) => {
   user.passwordConfirm = request.body.passwordConfirm;
   user.passwordResetToken = undefined;
   user.passwordResetExpires = undefined;
-  await user.save();
+  await user.save(); //Here we want to validate when we save - no arguments will run the validators
 
   // 3) Update changedPasswordAt property for the user
   // 4) Log the user in, send JWT
