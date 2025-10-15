@@ -30,7 +30,8 @@
     "start:dev": "cross-env NODE_ENV=development nodemon server.js",
     "start:prod": "cross-env NODE_ENV=production nodemon server.js",
     "watch:js": "esbuild ./public/js/index.js --bundle --outfile=./public/js/bundle.js --watch",
-    "build:js": "esbuild ./public/js/index.js --bundle --outfile=./public/js/bundle.js"
+    "build:js": "esbuild ./public/js/index.js --bundle --outfile=./public/js/bundle.js",
+    "prepare": "husky"
   },
   "dependencies": {
     "axios": "^1.12.2",
@@ -67,10 +68,14 @@
     "eslint-plugin-import": "^2.32.0",
     "eslint-plugin-jsx-a11y": "^6.10.2",
     "eslint-plugin-n": "^17.23.1",
-    "eslint-plugin-prettier": "^5.5.4",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^7.0.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.4",
     "nodemon": "^3.1.10",
-    "prettier": "^3.6.2"
+    "prettier": "3.6.2"
+  },
+  "lint-staged": {
+    "**/*": "prettier --write --ignore-unknown"
   }
 }

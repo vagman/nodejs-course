@@ -1,7 +1,34 @@
+import multer from 'multer';
+
 import User from '../models/userModel.js';
 import catchAsync from '../utils/catchAsync.js';
 import AppError from './../utils/appError.js';
 import * as factory from './handlerFactory.js';
+
+const multerStorage = multer.diskStorage({
+  destination: (request, file, callback) => {
+    callback(null, 'public/img/users');
+  },
+  filename: (request, file, callback) => {
+    // user-657495948asd885494-12312312321.jpeg
+    const extension = file.mimetype.split('/')[1];
+    callback(null, `user-${request.user.id}-${Date.now()}.${extension}`);
+  },
+});
+
+const multerFilter = (request, file, callback) => {
+  if (file.mimetype.startsWith('image')) {
+    callback(null, true);
+  } else {
+    callback(
+      new AppError('Not an image! Please upload only images.', 400),
+      false,
+    );
+  }
+};
+
+const upload = multer({ storage: multerStorage, fileFilter: multerFilter });
+const uploadUserPhoto = upload.single('photo');
 
 const filterObject = (obj, ...allowedFields) => {
   const newObject = {};
@@ -32,6 +59,7 @@ const updateCurrentUserData = catchAsync(async (request, response, next) => {
 
   // 2) Filtered out unwanted fields names that are not allowed to be updated
   const filteredBody = filterObject(request.body, 'name', 'email');
+  if (request.file) filteredBody.photo = request.file.filename;
 
   // 3) Update user document
   const updatedUser = await User.findByIdAndUpdate(
@@ -39,7 +67,7 @@ const updateCurrentUserData = catchAsync(async (request, response, next) => {
     filteredBody,
     {
       new: true,
-      runValidator: true,
+      runValidators: true,
     },
   );
 
@@ -72,6 +100,7 @@ const getUser = factory.getOne(User);
 const updateUser = factory.updateOne(User);
 
 export {
+  uploadUserPhoto,
   getMe,
   getAllUsers,
   updateCurrentUserData,

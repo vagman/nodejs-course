@@ -19,7 +19,7 @@ import viewRouter from './routes/viewRoutes.js';
 
 const app = express();
 
-// Base path to project folder+
+// Base path to project folder
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 app.set('view engine', 'pug');
 app.set('views', path.join(__dirname, 'views'));

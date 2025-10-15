@@ -1,13 +1,21 @@
 import js from '@eslint/js';
 import prettier from 'eslint-config-prettier';
-import eslintPluginPrettier from 'eslint-plugin-prettier';
 import eslintPluginImport from 'eslint-plugin-import';
 
 export default [
+  // Global ignores
+  {
+    ignores: [
+      'node_modules/**',
+      'dist/**',
+      '.vscode/**',
+      'public/js/bundle.js',
+    ],
+  },
+
   js.configs.recommended,
   {
     files: ['**/*.js'],
-    ignores: ['node_modules/**', 'dist/**', '.vscode/**'],
     languageOptions: {
       ecmaVersion: 'latest',
       sourceType: 'module',
@@ -24,11 +32,10 @@ export default [
       },
     },
     plugins: {
-      prettier: eslintPluginPrettier,
       import: eslintPluginImport,
     },
     rules: {
-      'prettier/prettier': 'error',
+      // Remove 'prettier/prettier'
       'spaced-comment': 'off',
       'no-console': 'warn',
       'consistent-return': 'off',
@@ -45,5 +52,6 @@ export default [
       'import/extensions': ['error', 'ignorePackages', { js: 'always' }],
     },
   },
+  // Disable rules that conflict with Prettier
   prettier,
 ];
