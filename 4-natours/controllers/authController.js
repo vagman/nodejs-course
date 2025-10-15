@@ -110,6 +110,8 @@ const protect = catchAsync(async (request, response, next) => {
 
   // 4) Check if user changed password after the token was issued
   if (currentUser.changedPasswordAfter(decoded.iat)) {
+    console.log('JWT issued at:', decoded.iat);
+    console.log('Password changed at:', currentUser.passwordChangedAt);
     return next(
       new AppError('User recently changed password! Please log in again.', 401),
     );
@@ -122,31 +124,35 @@ const protect = catchAsync(async (request, response, next) => {
 });
 
 // Only for rendered pages, no errors!
-const isLoggedIn = catchAsync(async (request, response, next) => {
-  if (request.cookies.jwt) {
-    // 1) Verify token
-    const decoded = await promisify(jwt.verify)(
-      request.cookies.jwt,
-      process.env.JWT_SECRET,
-    );
+const isLoggedIn = async (req, res, next) => {
+  if (req.cookies.jwt) {
+    try {
+      // 1) Verify the token
+      const decoded = await promisify(jwt.verify)(
+        req.cookies.jwt,
+        process.env.JWT_SECRET,
+      );
 
-    // 2) Check if user still exists
-    const currentUser = await User.findById(decoded.id);
-    if (!currentUser) {
+      // 2) Check if the user still exists
+      const currentUser = await User.findById(decoded.id);
+      if (!currentUser) {
+        return next();
+      }
+
+      // 3) Check if user changed password after the token was issued
+      if (currentUser.changedPasswordAfter(decoded.iat)) {
+        return next();
+      }
+
+      // There is a logged-in user
+      res.locals.user = currentUser; // Pass user data to templates
+      return next();
+    } catch (error) {
       return next();
     }
-
-    // 3) Check if user changed password after the token was issued
-    if (currentUser.changedPasswordAfter(decoded.iat)) {
-      return next();
-    }
-
-    // THERE IS A LOGGED IN USER
-    response.locals.user = currentUser;
-    return next();
   }
   next();
-});
+};
 
 const restrictTo = (...roles) => {
   return (request, response, next) => {

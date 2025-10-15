@@ -31973,35 +31973,36 @@
 
   // public/js/updateSettings.js
   var import_isEmail = __toESM(require_isEmail(), 1);
-  var updateData = async (name, email) => {
+  var updateSettings = async (data, type) => {
+    if (type === "data" && data.email && !(0, import_isEmail.default)(data.email)) {
+      showAlert("error", "Please provide a valid email address!");
+      return;
+    }
     try {
+      const url = type === "password" ? "/api/v1/users/updateMyPassword" : "/api/v1/users/updateMe";
       const response = await axios_default({
         method: "PATCH",
-        url: "/api/v1/users/updateMe",
-        data: {
-          name,
-          email
-        }
+        url,
+        data
       });
-      if (response.data.status === "success" && (0, import_isEmail.default)(email)) {
-        showAlert("success", "Data updated successfully!");
-      } else if (!(0, import_isEmail.default)(email)) {
-        showAlert("error", "Please provide a valid email address!");
+      if (response.data.status === "success") {
+        showAlert("success", `${type.toUpperCase()} updated successfully!`);
       }
     } catch (error) {
       showAlert(
         "error",
-        error.response?.data?.message || "Something went wrong!"
+        error.response?.data?.message || "An error occurred while updating settings."
       );
     }
   };
-  var updateSettings_default = updateData;
+  var updateSettings_default = updateSettings;
 
   // public/js/index.js
   var mapBox = document.getElementById("map");
   var loginForm = document.querySelector(".form--login");
   var logoutBtn = document.querySelector(".nav__el--logout");
   var userDataForm = document.querySelector(".form-user-data");
+  var userPasswordForm = document.querySelector(".form-user-password");
   if (mapBox) {
     const locations = JSON.parse(mapBox.dataset.locations);
     leaflet_default(locations);
@@ -32019,7 +32020,24 @@
       e.preventDefault();
       const name = document.getElementById("name").value;
       const email = document.getElementById("email").value;
-      updateSettings_default(name, email);
+      updateSettings_default({ name, email }, "data");
+    });
+  }
+  if (userPasswordForm) {
+    userPasswordForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      document.querySelector(".btn--save-password").textContent = "Updating...";
+      const passwordCurrent = document.getElementById("password-current").value;
+      const password = document.getElementById("password").value;
+      const passwordConfirm = document.getElementById("password-confirm").value;
+      await updateSettings_default(
+        { passwordCurrent, password, passwordConfirm },
+        "password"
+      );
+      document.querySelector(".btn--save-password").textContent = "Save password";
+      document.getElementById("password-current").value = "";
+      document.getElementById("password").value = "";
+      document.getElementById("password-confirm").value = "";
     });
   }
   if (logoutBtn) logoutBtn.addEventListener("click", logout);

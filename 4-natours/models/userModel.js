@@ -81,8 +81,8 @@ userSchema.pre(/^find/, function (next) {
 userSchema.pre('save', function (next) {
   if (!this.isModified('password') || this.isNew) return next();
 
-  this.passwordChangedAt = Date.now() - 1000;
-
+  //  Set the passwordChangedAt field to the current time
+  this.passwordChangedAt = Date.now() - 1000; // Subtract 1 second to ensure token is issued after this timestamp
   next();
 });
 
@@ -96,12 +96,11 @@ userSchema.methods.correctPassword = async function (
 userSchema.methods.changedPasswordAfter = function (JWTTimestampt) {
   if (this.passwordChangedAt) {
     const changedTimestamp = parseInt(
-      this.passwordChangedAt.getTime() / 100,
+      this.passwordChangedAt.getTime() / 1000,
       10,
     );
     return JWTTimestampt < changedTimestamp;
   }
-
   return false;
 };
 
