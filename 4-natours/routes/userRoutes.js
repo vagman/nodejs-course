@@ -1,4 +1,5 @@
 import express from 'express';
+import multer from 'multer';
 import {
   getMe,
   getAllUsers,
@@ -20,6 +21,9 @@ import {
   restrictTo,
 } from '../controllers/authController.js';
 
+// Setup multer for parsing multipart/form-data (file uploads)
+const upload = multer({ dest: 'public/img/users' });
+
 const router = express.Router();
 
 router.post('/signup', signup);
@@ -34,7 +38,7 @@ router.use(protect);
 router.get('/me', getMe, getUser);
 
 router.patch('/updateMyPassword', updatePassword);
-router.patch('/updateMe', updateCurrentUserData);
+router.patch('/updateMe', upload.single('photo'), updateCurrentUserData);
 router.delete('/deleteMe', deleteMe);
 
 // Admin routes

@@ -17,6 +17,9 @@ const getMe = (request, response, next) => {
 };
 
 const updateCurrentUserData = catchAsync(async (request, response, next) => {
+  console.log(request.file);
+  console.log(request.body);
+
   // 1) Create error if user POSTs password data
   if (request.body.password || request.body.passwordConfirm) {
     return next(
