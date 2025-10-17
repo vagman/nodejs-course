@@ -1,20 +1,22 @@
 import multer from 'multer';
+import sharp from 'sharp';
 
 import User from '../models/userModel.js';
 import catchAsync from '../utils/catchAsync.js';
 import AppError from './../utils/appError.js';
 import * as factory from './handlerFactory.js';
 
-const multerStorage = multer.diskStorage({
-  destination: (request, file, callback) => {
-    callback(null, 'public/img/users');
-  },
-  filename: (request, file, callback) => {
-    // user-657495948asd885494-12312312321.jpeg
-    const extension = file.mimetype.split('/')[1];
-    callback(null, `user-${request.user.id}-${Date.now()}.${extension}`);
-  },
-});
+// const multerStorage = multer.diskStorage({
+//   destination: (request, file, callback) => {
+//     callback(null, 'public/img/users');
+//   },
+//   filename: (request, file, callback) => {
+//     // user-657495948asd885494-12312312321.jpeg
+//     const extension = file.mimetype.split('/')[1];
+//     callback(null, `user-${request.user.id}-${Date.now()}.${extension}`);
+//   },
+// });
+const multerStorage = multer.memoryStorage();
 
 const multerFilter = (request, file, callback) => {
   if (file.mimetype.startsWith('image')) {
@@ -27,8 +29,26 @@ const multerFilter = (request, file, callback) => {
   }
 };
 
-const upload = multer({ storage: multerStorage, fileFilter: multerFilter });
+const upload = multer({
+  storage: multerStorage,
+  fileFilter: multerFilter,
+  limits: { fileSize: 10 * 1024 * 1024 },
+});
 const uploadUserPhoto = upload.single('photo');
+
+const resizeUserPhoto = (request, response, next) => {
+  if (!request.file) return next();
+
+  request.file.filename = `user-${request.user.id}-${Date.now()}.jpeg`;
+
+  sharp(request.file.buffer)
+    .resize(500, 500) // width, height
+    .toFormat('jpeg') // convert to jpeg
+    .jpeg({ quality: 90 }) // set quality to 90%
+    .toFile(`public/img/users/${request.file.filename}`); // save to disk
+
+  next();
+};
 
 const filterObject = (obj, ...allowedFields) => {
   const newObject = {};
@@ -44,9 +64,6 @@ const getMe = (request, response, next) => {
 };
 
 const updateCurrentUserData = catchAsync(async (request, response, next) => {
-  console.log(request.file);
-  console.log(request.body);
-
   // 1) Create error if user POSTs password data
   if (request.body.password || request.body.passwordConfirm) {
     return next(
@@ -101,6 +118,7 @@ const updateUser = factory.updateOne(User);
 
 export {
   uploadUserPhoto,
+  resizeUserPhoto,
   getMe,
   getAllUsers,
   updateCurrentUserData,

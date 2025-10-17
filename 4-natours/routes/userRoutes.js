@@ -9,6 +9,7 @@ import {
   deleteMe,
   deleteUser,
   uploadUserPhoto,
+  resizeUserPhoto,
 } from '../controllers/userController.js';
 import {
   login,
@@ -35,7 +36,12 @@ router.use(protect);
 router.get('/me', getMe, getUser);
 
 router.patch('/updateMyPassword', updatePassword);
-router.patch('/updateMe', uploadUserPhoto, updateCurrentUserData);
+router.patch(
+  '/updateMe',
+  uploadUserPhoto,
+  resizeUserPhoto,
+  updateCurrentUserData,
+);
 router.delete('/deleteMe', deleteMe);
 
 // Admin routes
