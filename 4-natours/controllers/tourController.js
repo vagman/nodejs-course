@@ -1,7 +1,52 @@
+import multer from 'multer';
+import sharp from 'sharp';
+
 import Tour from '../models/tourModel.js';
 import catchAsync from '../utils/catchAsync.js';
 import * as factory from './handlerFactory.js';
 import AppError from '../utils/appError.js';
+
+const multerStorage = multer.memoryStorage();
+
+const multerFilter = (request, file, callback) => {
+  if (file.mimetype.startsWith('image')) {
+    callback(null, true);
+  } else {
+    callback(
+      new AppError('Not an image! Please upload only images.', 400),
+      false,
+    );
+  }
+};
+
+const upload = multer({
+  storage: multerStorage,
+  fileFilter: multerFilter,
+  limits: { fileSize: 10 * 1024 * 1024 },
+});
+
+// Mixed fields upload: expects 'imageCover' (1) + 'images' (≤3). For a single file use upload.single('image'); for multiple files from the same field use upload.array('images', 5).
+
+const uploadTourImages = upload.fields([
+  {
+    name: 'imageCover',
+    maxCount: 1,
+  },
+  {
+    name: 'images',
+    maxCount: 3,
+  },
+]);
+// If we wanted a single image with a specific field name
+// const uploadTourImages = upload.single('image');
+
+// If we wanted multiple images with the same field name
+// const uploadTourImages = upload.array('images', 5);
+
+const resizeTourImages = catchAsync(async (request, response, next) => {
+  console.log(request.files);
+  next();
+});
 
 const aliasTopTours = (request, response, next) => {
   request.url =
@@ -171,6 +216,8 @@ const getDistances = catchAsync(async (request, response, next) => {
 });
 
 export {
+  uploadTourImages,
+  resizeTourImages,
   aliasTopTours,
   getAllTours,
   getTour,

@@ -34,6 +34,7 @@ const upload = multer({
   fileFilter: multerFilter,
   limits: { fileSize: 10 * 1024 * 1024 },
 });
+
 const uploadUserPhoto = upload.single('photo');
 
 const resizeUserPhoto = (request, response, next) => {
