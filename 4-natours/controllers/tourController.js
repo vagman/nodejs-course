@@ -71,7 +71,6 @@ const resizeTourImages = catchAsync(async (request, response, next) => {
     }),
   );
 
-  console.log(request.body);
   next();
 });
 
