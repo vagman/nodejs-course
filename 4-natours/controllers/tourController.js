@@ -44,7 +44,34 @@ const uploadTourImages = upload.fields([
 // const uploadTourImages = upload.array('images', 5);
 
 const resizeTourImages = catchAsync(async (request, response, next) => {
-  console.log(request.files);
+  if (!request.files.imageCover || !request.files.images) return next();
+
+  // 1) Cover image
+  request.body.imageCover = `tour-${request.params.id}-${Date.now()}-cover.jpeg`;
+  await sharp(request.files.imageCover[0].buffer)
+    .resize(500, 500) // width, height
+    .toFormat('jpeg') // convert to jpeg
+    .jpeg({ quality: 90 }) // set quality to 90%
+    .toFile(`public/img/tours/${request.body.imageCover}`); // save to disk
+
+  // 2) Images
+  request.body.images = [];
+
+  await Promise.all(
+    request.files.images.map(async (image, index) => {
+      const filename = `tour-${request.params.id}-${Date.now()}-${index + 1}.jpeg`;
+
+      await sharp(image.buffer)
+        .resize(500, 500) // width, height
+        .toFormat('jpeg') // convert to jpeg
+        .jpeg({ quality: 90 }) // set quality to 90%
+        .toFile(`public/img/tours/${filename}`); // save to disk
+
+      request.body.images.push(filename);
+    }),
+  );
+
+  console.log(request.body);
   next();
 });
 
