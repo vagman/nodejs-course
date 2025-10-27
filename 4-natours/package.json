@@ -23,7 +23,7 @@
   "type": "module",
   "main": "server.js",
   "engines": {
-    "npm": "^11.6.1",
+    "npm": "^11.6.2",
     "node": "^22.20.0"
   },
   "scripts": {
