@@ -35215,8 +35215,8 @@
   // node_modules/stripe/esm/RequestSender.js
   var MAX_RETRY_AFTER_WAIT = 60;
   var RequestSender = class _RequestSender {
-    constructor(stripe2, maxBufferedRequestMetric) {
-      this._stripe = stripe2;
+    constructor(stripe, maxBufferedRequestMetric) {
+      this._stripe = stripe;
       this._maxBufferedRequestMetric = maxBufferedRequestMetric;
     }
     _normalizeStripeContext(optsContext, clientContext) {
@@ -35847,14 +35847,14 @@
   StripeResource.extend = protoExtend;
   StripeResource.method = stripeMethod;
   StripeResource.MAX_BUFFERED_REQUEST_METRICS = 100;
-  function StripeResource(stripe2, deprecatedUrlData) {
-    this._stripe = stripe2;
+  function StripeResource(stripe, deprecatedUrlData) {
+    this._stripe = stripe;
     if (deprecatedUrlData) {
       throw new Error("Support for curried url params was dropped in stripe-node v7.0.0. Instead, pass two ids.");
     }
     this.basePath = makeURLInterpolator(
       // @ts-ignore changing type of basePath
-      this.basePath || stripe2.getApiField("basePath")
+      this.basePath || stripe.getApiField("basePath")
     );
     this.resourcePath = this.path;
     this.path = makeURLInterpolator(this.path);
@@ -36295,19 +36295,19 @@
   });
 
   // node_modules/stripe/esm/ResourceNamespace.js
-  function ResourceNamespace(stripe2, resources) {
+  function ResourceNamespace(stripe, resources) {
     for (const name in resources) {
       if (!Object.prototype.hasOwnProperty.call(resources, name)) {
         continue;
       }
       const camelCaseName = name[0].toLowerCase() + name.substring(1);
-      const resource = new resources[name](stripe2);
+      const resource = new resources[name](stripe);
       this[camelCaseName] = resource;
     }
   }
   function resourceNamespace(namespace, resources) {
-    return function(stripe2) {
-      return new ResourceNamespace(stripe2, resources);
+    return function(stripe) {
+      return new ResourceNamespace(stripe, resources);
     };
   }
 
@@ -39193,7 +39193,7 @@
     "stripeAccount",
     "stripeContext"
   ];
-  var defaultRequestSenderFactory = (stripe2) => new RequestSender(stripe2, StripeResource.MAX_BUFFERED_REQUEST_METRICS);
+  var defaultRequestSenderFactory = (stripe) => new RequestSender(stripe, StripeResource.MAX_BUFFERED_REQUEST_METRICS);
   function createStripe(platformFunctions, requestSender = defaultRequestSenderFactory) {
     Stripe2.PACKAGE_VERSION = "19.2.0";
     Stripe2.API_VERSION = ApiVersion;
@@ -39506,10 +39506,10 @@
   var stripe_esm_worker_default = Stripe;
 
   // public/js/stripe.js
-  var stripe = new stripe_esm_worker_default(
-    "pk_test_51SLNQnRvXPpAgu0vLExLlLXkFNgIbp1JEuxgdIQ9xYiBLBPRf3TojN4sKfkPGAqQIyANjNXaMRBc9CyIpz174Jdy00XLQPwiTP"
-  );
   var bookTour = async (tourId) => {
+    const stripe = new stripe_esm_worker_default(
+      "pk_test_51SLNQnRvXPpAgu0vLExLlLXkFNgIbp1JEuxgdIQ9xYiBLBPRf3TojN4sKfkPGAqQIyANjNXaMRBc9CyIpz174Jdy00XLQPwiTP"
+    );
     try {
       const session = await axios_default(`/api/v1/bookings/checkout-session/${tourId}`);
       console.log(session);
