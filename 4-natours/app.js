@@ -39,8 +39,8 @@ app.use(
   helmet.contentSecurityPolicy({
     directives: {
       defaultSrc: ["'self'"],
-      connectSrc: ["'self'"],
-      scriptSrc: ["'self'"],
+      connectSrc: ["'self'", 'https://api.stripe.com'], // allow Stripe API calls
+      scriptSrc: ["'self'", 'https://js.stripe.com'],
       styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com/'],
       workerSrc: ["'self'", 'blob:'],
       objectSrc: [],
@@ -54,6 +54,20 @@ app.use(
         'https://c.tile.openstreetmap.org',
       ],
       fontSrc: ["'self'", ...fontSrcUrls],
+      // FIX: allow Stripe iframes created by Stripe.js
+      frameSrc: [
+        "'self'",
+        'https://js.stripe.com',
+        'https://hooks.stripe.com',
+        'https://checkout.stripe.com',
+      ],
+      // childSrc for older browsers (fallback for frameSrc)
+      childSrc: [
+        "'self'",
+        'https://js.stripe.com',
+        'https://hooks.stripe.com',
+        'https://checkout.stripe.com',
+      ],
     },
   }),
 );

@@ -2,12 +2,12 @@ import mongoose from 'mongoose';
 
 const bookingSchema = new mongoose.Schema({
   tour: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: mongoose.Schema.ObjectId,
     ref: 'Tour',
     required: [true, 'A booking must belong to a tour!'],
   },
   user: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: mongoose.Schema.ObjectId,
     ref: 'User',
     required: [true, 'A booking must belong to a user!'],
   },

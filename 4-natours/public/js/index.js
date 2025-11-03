@@ -4,6 +4,7 @@ import 'regenerator-runtime/runtime';
 import { login, logout } from './login.js';
 import displayMap from './leaflet.js';
 import updateSettings from './updateSettings.js';
+import bookTour from './stripe.js';
 
 // DOM ELEMENTS
 const mapBox = document.getElementById('map');
@@ -11,6 +12,7 @@ const loginForm = document.querySelector('.form--login');
 const logoutBtn = document.querySelector('.nav__el--logout');
 const userDataForm = document.querySelector('.form-user-data');
 const userPasswordForm = document.querySelector('.form-user-password');
+const bookBtn = document.getElementById('book-tour');
 
 // DELEGATION
 if (mapBox) {
@@ -64,3 +66,11 @@ if (userPasswordForm) {
 }
 
 if (logoutBtn) logoutBtn.addEventListener('click', logout);
+
+if (bookBtn) {
+  bookBtn.addEventListener('click', e => {
+    e.target.textContent = 'Processing...';
+    const { tourId } = e.target.dataset;
+    bookTour(tourId);
+  });
+}

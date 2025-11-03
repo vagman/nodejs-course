@@ -1,9 +1,8 @@
 import Stripe from 'stripe';
 
 import Tour from '../models/tourModel.js';
+import Booking from '../models/bookingModel.js';
 import catchAsync from '../utils/catchAsync.js';
-import * as factory from './handlerFactory.js';
-import AppError from '../utils/appError.js';
 
 const getCheckoutSession = catchAsync(async (request, response, next) => {
   // 0. Get thecurrently booked tour
@@ -33,7 +32,9 @@ const getCheckoutSession = catchAsync(async (request, response, next) => {
       },
     ],
     mode: 'payment',
-    success_url: `${request.protocol}://${request.get('host')}/`,
+    // Redirect to homepage if successful - NOT SECURE - everyone can make bookings without paying!
+    success_url: `${request.protocol}://${request.get('host')}/?tour=${request.params.tourId}&user=${request.user.id}&price=${tour.price}`,
+    // Redirect to the tour page if they cancel
     cancel_url: `${request.protocol}://${request.get('host')}/tour/${tour.slug}`,
   });
 
@@ -44,4 +45,16 @@ const getCheckoutSession = catchAsync(async (request, response, next) => {
   });
 });
 
-export { getCheckoutSession };
+const createBookingCheckout = catchAsync(async (request, response, next) => {
+  // This is only TEMPORARY, because it's UNSECURE: everyone can make bookings without paying
+  const { tour, user, price } = request.query;
+
+  // If there is no query, move to the next middleware
+  if (!tour || !user || !price) return next();
+  await Booking.create({ tour, user, price });
+
+  // Redirect to the original URL without the query string
+  response.redirect(request.originalUrl.split('?')[0]);
+});
+
+export { getCheckoutSession, createBookingCheckout };
