@@ -3,6 +3,7 @@ import Stripe from 'stripe';
 import Tour from '../models/tourModel.js';
 import Booking from '../models/bookingModel.js';
 import catchAsync from '../utils/catchAsync.js';
+import * as factory from './handlerFactory.js';
 
 const getCheckoutSession = catchAsync(async (request, response, next) => {
   // 0. Get thecurrently booked tour
@@ -57,4 +58,18 @@ const createBookingCheckout = catchAsync(async (request, response, next) => {
   response.redirect(request.originalUrl.split('?')[0]);
 });
 
-export { getCheckoutSession, createBookingCheckout };
+const createBooking = factory.createOne(Booking);
+const getBooking = factory.getOne(Booking);
+const getAllBookings = factory.getAll(Booking);
+const updateBooking = factory.updateOne(Booking);
+const deleteBooking = factory.deleteOne(Booking);
+
+export {
+  getCheckoutSession,
+  createBookingCheckout,
+  createBooking,
+  updateBooking,
+  deleteBooking,
+  getBooking,
+  getAllBookings,
+};
