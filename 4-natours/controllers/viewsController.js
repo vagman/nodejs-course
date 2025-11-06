@@ -1,5 +1,6 @@
 import User from '../models/userModel.js';
 import Tour from '../models/tourModel.js';
+import Booking from '../models/bookingModel.js';
 import catchAsync from '../utils/catchAsync.js';
 import AppError from '../utils/appError.js';
 
@@ -8,9 +9,7 @@ const getOverview = catchAsync(async (request, response, next) => {
   const tours = await Tour.find();
 
   // 2. Build template
-
   // 3. Render that template using tour data from Step 1.
-
   response.status(200).render('overview', {
     title: 'All Tours',
     tours,
@@ -33,6 +32,21 @@ const getTour = catchAsync(async (request, response, next) => {
   response.status(200).render('tour', {
     title: `${tour.name} Tour`,
     tour,
+  });
+});
+
+const getMyTours = catchAsync(async (request, response, next) => {
+  // 1. Find all bookings - virtual populate on tours field
+  const bookings = await Booking.find({ user: request.user.id });
+
+  // 2. Find tours with the returned IDs
+  const tourIDs = bookings.map(el => el.tour.id);
+  const tours = await Tour.find({ _id: { $in: tourIDs } });
+
+  // 3. Render template
+  response.status(200).render('overview', {
+    title: 'My Tours',
+    tours,
   });
 });
 
@@ -67,4 +81,11 @@ const updateUserData = catchAsync(async (request, response, next) => {
   });
 });
 
-export { getOverview, getTour, getLoginForm, getAccount, updateUserData };
+export {
+  getOverview,
+  getTour,
+  getMyTours,
+  getLoginForm,
+  getAccount,
+  updateUserData,
+};
